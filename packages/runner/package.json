@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "name": "@vite-benchmark/scripts",
+  "scripts": {
+    "build": "vite build --mode production",
+    "dev": "vite",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "@tsconfig/node18-strictest-esm": "^1.0.1",
+    "@types/node": "^18.14.0",
+    "tsx": "^3.12.3"
+  }
+}
