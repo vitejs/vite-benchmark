@@ -13,7 +13,7 @@ import { pipeline } from "node:stream/promises"
 import path from "path"
 import AdmZip from "adm-zip"
 import { runCases } from "./cases"
-import { execaCommand } from "execa"
+import { execaCommand, execa } from "execa"
 
 const octokit = new Octokit({})
 
@@ -43,9 +43,11 @@ async function cloneVite(ref: string = `heads/${MAIN_BRANCH}`) {
 
   const zip = new AdmZip(zipPath)
   const entryName = zip.getEntries()[0]?.entryName
-  const viteDir = path.resolve(ZIP_DIR, entryName!)
-  zip.extractEntryTo(entryName!, ZIP_DIR, true)
-  console.log(colors.green(`Vite unziped to ${viteDir}`))
+  let viteDir = path.resolve(ZIP_DIR, entryName!)
+  // zip.extractEntryTo(entryName!, ZIP_DIR, true)
+  // fs.renameSync(viteDir, path.resolve(ZIP_DIR, "vite"))
+  viteDir = path.resolve(ZIP_DIR, "vite")
+  // console.log(colors.green(`Vite unziped to ${viteDir}`))
   return viteDir
 }
 
@@ -58,19 +60,21 @@ async function main() {
   })
   console.log(colors.cyan(`Dependencies install`))
   console.log(colors.cyan(`Start building Vite`))
-  await execaCommand(`pnpm build`, {
-    cwd: viteDir,
-    stdio: "inherit",
-  })
+  // await execaCommand(`pnpm build`, {
+  //   cwd: viteDir,
+  //   stdio: "inherit",
+  // })
   console.log(colors.cyan(`Vite built`))
   const viteBin = path.resolve(viteDir, "packages/vite/bin/vite.js")
 
-  // await execaCommand(`echo 344`, {
-  //   stdio: "inherit",
-  // })
+  console.log(colors.cyan(`Re-installing dependencies for linking vite`))
+  await execa("pnpm", ["i"], {
+    stdio: "inherit",
+  })
 
-  runCases({
+  await runCases({
     viteDir,
+    viteBin,
   })
 }
 main()

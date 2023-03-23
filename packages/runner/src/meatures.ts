@@ -6,13 +6,16 @@ export class Measure {
   public duration: number = 0
   public func: (...args: any[]) => any = () => {}
 
-  constructor(options: { onStart: (...args: any[]) => void | Promise<void> }) {
-    // this.
+  constructor(options: { func: (...args: any[]) => void | Promise<void> }) {
+    this.func = options.func
   }
 
-  public async start() {
+  public async run() {
     this.startTime = Date.now()
     await this.func()
+    this.end()
+    this.report()
+    this.dispose()
   }
 
   public end() {
@@ -23,4 +26,6 @@ export class Measure {
   public report() {
     console.log(colors.cyan(`Duration: ${this.duration}ms`))
   }
+
+  public dispose() {}
 }

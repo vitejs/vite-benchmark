@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "serve": "serve -S ./dist"
   },
   "dependencies": {
@@ -22,6 +22,6 @@
     "@vitejs/plugin-react": "^1.1.0",
     "serve": "^13.0.2",
     "typescript": "^4.5.2",
-    "vite": "^2.7.1"
+    "vite": "link:../../vite-tar/vite/packages/vite"
   }
 }
