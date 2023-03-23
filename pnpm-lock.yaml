@@ -8,7 +8,7 @@ importers:
     devDependencies:
       prettier: 2.8.4
 
-  packages/cases/perf-1:
+  cases/perf-1:
     specifiers:
       '@emotion/react': ^11.7.0
       '@emotion/styled': ^11.6.0
@@ -23,7 +23,7 @@ importers:
       react-dom: ^17.0.2
       serve: ^13.0.2
       typescript: ^4.5.2
-      vite: link:../../vite-tar/vite/packages/vite
+      vite: link:../../packages/vite-tar/vite/packages/vite
     dependencies:
       '@emotion/react': 11.10.6_h7fc2el62uaa77gho3xhys6ola
       '@emotion/styled': 11.10.6_7hisdke2c3hq4r3q5z4dcdhmzi
@@ -39,7 +39,7 @@ importers:
       '@vitejs/plugin-react': 1.3.2
       serve: 13.0.4
       typescript: 4.9.5
-      vite: link:../../vite-tar/vite/packages/vite
+      vite: link:../../packages/vite-tar/vite/packages/vite
 
   packages/runner:
     specifiers:

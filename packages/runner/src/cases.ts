@@ -24,7 +24,4 @@ export async function runCases({
   })
 
   await measure.run()
-  // measure.start()
-  // measure.end()
-  // measure.report()
 }

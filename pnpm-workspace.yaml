@@ -1,5 +1,4 @@
 packages:
-  - "!packages/vite-tar/**"
-  - "packages/cases/**"
+  - "cases/**"
   - "packages/**"
-  - "playground/**"
+  - "!packages/vite-tar/**"
