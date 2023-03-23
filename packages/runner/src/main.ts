@@ -68,9 +68,9 @@ async function main() {
   const viteBin = path.resolve(viteDir, "packages/vite/bin/vite.js")
 
   console.log(colors.cyan(`Re-installing dependencies for linking vite`))
-  await execa("pnpm", ["i"], {
-    stdio: "inherit",
-  })
+  // await execa("pnpm", ["i"], {
+  //   stdio: "inherit",
+  // })
 
   await runCases({
     viteDir,

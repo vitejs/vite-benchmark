@@ -16,6 +16,10 @@ export async function runCases({
   // build time
   const measure = new Measure({
     func: async () => {
+      await execa("npm", ["i"], {
+        cwd: perf1,
+        stdio: "inherit",
+      })
       await execa("npm", ["run", "build"], {
         cwd: perf1,
         stdio: "inherit",
