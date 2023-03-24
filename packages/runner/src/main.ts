@@ -12,7 +12,7 @@ import fs from "node:fs"
 import { pipeline } from "node:stream/promises"
 import path from "path"
 import AdmZip from "adm-zip"
-import { runCases } from "./cases"
+import { runBenchmarks } from "./cases"
 import { execaCommand, execa } from "execa"
 
 const octokit = new Octokit({})
@@ -72,7 +72,7 @@ async function main() {
   //   stdio: "inherit",
   // })
 
-  await runCases({
+  await runBenchmarks({
     viteDir,
     viteBin,
   })

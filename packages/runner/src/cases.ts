@@ -1,31 +1,12 @@
-import { execa } from "execa"
-import path from "path"
+import { benchmark as perf1 } from "./cases/perf-1"
 
-import { CASE_DIR } from "./constant"
-import { Measure } from "./meatures"
-
-const perf1 = path.resolve(CASE_DIR, "perf-1")
-
-export async function runCases({
+export async function runBenchmarks({
   viteDir,
   viteBin,
 }: {
   viteDir: string
   viteBin: string
 }) {
-  // build time
-  const measure = new Measure({
-    func: async () => {
-      await execa("npm", ["i"], {
-        cwd: perf1,
-        stdio: "inherit",
-      })
-      await execa("npm", ["run", "build"], {
-        cwd: perf1,
-        stdio: "inherit",
-      })
-    },
-  })
-
-  await measure.run()
+  // perf-1
+  perf1.run()
 }
