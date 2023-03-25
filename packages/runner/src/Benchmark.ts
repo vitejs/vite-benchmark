@@ -1,22 +1,27 @@
 import { execa } from "execa"
-import type { ExecaChildProcess } from "execa"
+import { ensureDir } from "fs-extra"
+import { copyFile, writeFile } from "fs/promises"
+import path from "path"
 import colors from "picocolors"
 
+import { UPLOAD_DIR } from "./constant"
+
+import type { ExecaChildProcess } from "execa"
 export class Benchmark {
   public dir!: string
   public startTime!: number
   public endTime!: number
   public duration!: number
-  public func: (...args: any[]) => any = () => {}
+  public scripts: (...args: any[]) => any = () => {}
   public debugLog = ""
   public serveChild?: ExecaChildProcess<string>
 
   constructor(options: {
     dir: string
-    func: (...args: any[]) => void | Promise<void>
+    scripts: (...args: any[]) => void | Promise<void>
   }) {
     this.dir = options.dir
-    this.func = options.func
+    this.scripts = options.scripts
   }
 
   public async installDeps() {
@@ -27,21 +32,32 @@ export class Benchmark {
   }
 
   public async run() {
+    await this.installDeps()
+    console.log(colors.green(`Start running benchmark script`))
     this.startTime = Date.now()
-    await this.func()
-    this.end()
+    await this.scripts()
+    this.endTime = Date.now()
+    console.log(colors.green(`Finish running benchmark script`))
+    this.duration = this.endTime - this.startTime
     this.report()
     this.dispose()
   }
 
-  public async startDevServer({
+  public async startServer({
     onDepsBundled,
   }: {
     onDepsBundled?: () => unknown
   } = {}) {
     this.serveChild = execa(
-      "npm",
-      ["run", "dev", "--", "--profile", "--debug", "--force"],
+      "node",
+      [
+        "--cpu-prof",
+        "--cpu-prof-name=CPU.cpuprofile",
+        "../../packages/vite-tar/vite/packages/vite/bin/vite.js",
+        "dev",
+        "--debug",
+        "--force",
+      ],
       {
         cwd: this.dir,
         stdio: "pipe",
@@ -49,27 +65,40 @@ export class Benchmark {
       }
     )
 
+    let resolveServer: (value: unknown) => void
+    const serverPromise = new Promise((resolve) => {
+      resolveServer = resolve
+    })
+
     this.serveChild.stderr?.on("data", (data: Buffer) => {
       this.debugLog += data.toString()
       if (data.toString().includes("deps bundled in")) {
+        console.log(colors.cyan(`Server stopped`))
         onDepsBundled?.()
       }
     })
+
+    this.serveChild.on("exit", () => {
+      resolveServer(1)
+    })
+
+    return serverPromise
   }
 
-  public dumpServeProfile() {
-    // TODO: how to pipe 'p' to child process?
-    this.serveChild?.stdin?.write("p")
-    this.serveChild?.stdin?.end()
+  public stopServer() {
+    this.serveChild?.kill("SIGTERM", {
+      forceKillAfterTimeout: 2000,
+    })
   }
 
-  public end() {
-    this.endTime = Date.now()
-    this.duration = this.endTime - this.startTime
-  }
-
-  public report() {
-    console.log(colors.cyan(`Duration: ${this.duration}ms`))
+  public async report() {
+    await ensureDir(UPLOAD_DIR)
+    await writeFile(path.resolve(UPLOAD_DIR, "./debug-log.txt"), this.debugLog)
+    await copyFile(
+      path.resolve(this.dir, "./CPU.cpuprofile"),
+      path.resolve(UPLOAD_DIR, "./CPU.cpuprofile")
+    )
+    console.log(colors.green(`Benchmark report saved to ${UPLOAD_DIR}`))
   }
 
   public dispose() {}
