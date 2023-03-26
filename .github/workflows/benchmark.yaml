@@ -53,6 +53,6 @@ jobs:
       - name: Upload benchmark
         uses: actions/upload-artifact@v2
         with:
-          name: test-results-main
+          name: benchmark-artifact
           path: ./upload
           if-no-files-found: ignore

@@ -10,3 +10,4 @@ export const MAIN_BRANCH = 'main'
 export const CASE_DIR = path.resolve(__dirname, '../../cases')
 export const UPLOAD_DIR = path.resolve(__dirname, '../../upload')
 export const PROJECT_DIR = path.resolve(__dirname, '../..')
+export const VITE_DIR = path.resolve(PROJECT_DIR, './vite')

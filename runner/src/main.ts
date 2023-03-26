@@ -12,7 +12,13 @@ import colors from 'picocolors'
 import tar from 'tar'
 
 import { runBenchmarks } from './cases'
-import { MAIN_BRANCH, PROJECT_DIR, REPO_NAME, REPO_OWNER } from './constant'
+import {
+  MAIN_BRANCH,
+  PROJECT_DIR,
+  REPO_NAME,
+  REPO_OWNER,
+  VITE_DIR,
+} from './constant'
 
 const octokit = new Octokit({})
 
@@ -20,17 +26,22 @@ async function cloneVite(ref: string = `heads/${MAIN_BRANCH}`) {
   // https://docs.github.com/en/actions/learn-github-actions/variables
   const runnerTempDir = process.env['RUNNER_TEMP'] || os.tmpdir()
 
-  const viteTempDir = await fsp.mkdtemp(path.join(runnerTempDir, 'vite'))
-  const { data: refData } = await octokit.rest.git.getRef({
-    owner: REPO_OWNER,
-    repo: REPO_NAME,
-    ref,
-  })
+  const tempDir = await fsp.mkdtemp(path.join(runnerTempDir, 'vite'))
+  const viteRelativePath = './vite'
+  const viteTempDir = path.resolve(tempDir, viteRelativePath)
 
-  const mainSha = refData.object.sha
-  const shortName = `vite-${mainSha.slice(0, 8)}`
-  const zipPath = path.resolve(viteTempDir, `./${shortName}.zip`)
-  if (!fs.existsSync(zipPath)) {
+  if (process.env['CI']) {
+    await fsExtra.copy(VITE_DIR, viteTempDir)
+    await fsExtra.remove(VITE_DIR)
+  } else {
+    const { data: refData } = await octokit.rest.git.getRef({
+      owner: REPO_OWNER,
+      repo: REPO_NAME,
+      ref,
+    })
+    const mainSha = refData.object.sha
+    const shortName = `vite-${mainSha.slice(0, 8)}`
+    const zipPath = path.resolve(tempDir, `./${shortName}.zip`)
     console.log(colors.yellow(`Cloning vitejs/vite@${ref} into ${zipPath}`))
     const { url: zipUrl } = await octokit.rest.repos.downloadZipballArchive({
       owner: REPO_OWNER,
@@ -39,21 +50,21 @@ async function cloneVite(ref: string = `heads/${MAIN_BRANCH}`) {
     })
     await pipeline(got.stream(zipUrl), fsExtra.createWriteStream(zipPath))
     console.log(colors.green(`Downloaded vitejs/vite@${mainSha}`))
-  } else {
-    console.log(colors.green(`${mainSha} exists and will be reused.`))
+
+    const zip = new AdmZip(zipPath)
+    const entryName = zip.getEntries()[0]?.entryName
+    const viteDirWithRef = path.resolve(tempDir, entryName!)
+    zip.extractEntryTo(entryName!, tempDir, true)
+    fs.renameSync(viteDirWithRef, path.resolve(tempDir, viteRelativePath))
   }
 
-  const zip = new AdmZip(zipPath)
-  const entryName = zip.getEntries()[0]?.entryName
-  let viteDir = path.resolve(viteTempDir, entryName!)
-  zip.extractEntryTo(entryName!, viteTempDir, true)
+  console.log(
+    colors.cyan(
+      `vitejs/vite copied to @${path.resolve(runnerTempDir, viteRelativePath)}`
+    )
+  )
 
-  const viteRelativePath = './vite'
-  fs.renameSync(viteDir, path.resolve(viteTempDir, viteRelativePath))
-  viteDir = path.resolve(viteTempDir, 'vite')
-
-  const vitePath = path.resolve(viteTempDir, viteRelativePath)
-  return vitePath
+  return viteTempDir
 }
 
 async function main() {
@@ -64,6 +75,7 @@ async function main() {
   console.log(colors.cyan(`Start install dependencies for Vite`))
   const $$ = $({ stdio: 'inherit', cwd: viteDir })
 
+  await $$`node -v`
   await $$`corepack enable`
   await $$`pnpm i`
 
@@ -88,8 +100,8 @@ async function main() {
     path.resolve(PROJECT_DIR, tarName)
   )
 
-  if (fs.existsSync(path.resolve(PROJECT_DIR, './vite'))) {
-    fs.rmSync(path.resolve(PROJECT_DIR, './vite'), { recursive: true })
+  if (fs.existsSync(VITE_DIR)) {
+    fs.rmSync(VITE_DIR, { recursive: true })
   }
 
   await tar.x({
