@@ -104,7 +104,7 @@ dist
 .tern-port
 
 # vite-benchmark
-packages/vite-tar
 packages/upload
 *.cpuprofile
 /upload
+/vite

@@ -1,10 +1,10 @@
-import path from "path"
+import path from 'path'
 
-import { CASE_DIR } from "../constant"
-import { Benchmark } from "../Benchmark"
+import { CASE_DIR } from '../constant'
+import { Benchmark } from '../Benchmark'
 
 export const benchmark = new Benchmark({
-  dir: path.resolve(CASE_DIR, "perf-1"),
+  dir: path.resolve(CASE_DIR, 'perf-1'),
   scripts: async () => {
     await benchmark.installDeps()
     await benchmark.startServer({

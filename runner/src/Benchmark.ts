@@ -1,19 +1,19 @@
-import { execa } from "execa"
-import { ensureDir } from "fs-extra"
-import { copyFile, writeFile } from "fs/promises"
-import path from "path"
-import colors from "picocolors"
+import { execa } from 'execa'
+import { ensureDir } from 'fs-extra'
+import { copyFile, writeFile } from 'fs/promises'
+import path from 'path'
+import colors from 'picocolors'
 
-import { UPLOAD_DIR } from "./constant"
+import { UPLOAD_DIR } from './constant'
 
-import type { ExecaChildProcess } from "execa"
+import type { ExecaChildProcess } from 'execa'
 export class Benchmark {
   public dir!: string
   public startTime!: number
   public endTime!: number
   public duration!: number
   public scripts: (...args: any[]) => any = () => {}
-  public debugLog = ""
+  public debugLog = ''
   public serveChild?: ExecaChildProcess<string>
 
   constructor(options: {
@@ -25,9 +25,10 @@ export class Benchmark {
   }
 
   public async installDeps() {
-    await execa("npm", ["i"], {
+    // https://github.com/npm/cli/issues/2339
+    await execa('npm', ['i', '--install-links'], {
       cwd: this.dir,
-      stdio: "inherit",
+      stdio: 'inherit',
     })
   }
 
@@ -49,18 +50,18 @@ export class Benchmark {
     onDepsBundled?: () => unknown
   } = {}) {
     this.serveChild = execa(
-      "node",
+      'node',
       [
-        "--cpu-prof",
-        "--cpu-prof-name=CPU.cpuprofile",
-        "../../packages/vite-tar/vite/packages/vite/bin/vite.js",
-        "dev",
-        "--debug",
-        "--force",
+        '--cpu-prof',
+        '--cpu-prof-name=CPU.cpuprofile',
+        '../../vite/bin/vite.js',
+        'dev',
+        '--debug',
+        '--force',
       ],
       {
         cwd: this.dir,
-        stdio: "pipe",
+        stdio: 'pipe',
         detached: true,
       }
     )
@@ -70,15 +71,15 @@ export class Benchmark {
       resolveServer = resolve
     })
 
-    this.serveChild.stderr?.on("data", (data: Buffer) => {
+    this.serveChild.stderr?.on('data', (data: Buffer) => {
       this.debugLog += data.toString()
-      if (data.toString().includes("deps bundled in")) {
+      if (data.toString().includes('Dependencies bundled in')) {
         console.log(colors.cyan(`Server stopped`))
         onDepsBundled?.()
       }
     })
 
-    this.serveChild.on("exit", () => {
+    this.serveChild.on('exit', () => {
       resolveServer(1)
     })
 
@@ -86,17 +87,17 @@ export class Benchmark {
   }
 
   public stopServer() {
-    this.serveChild?.kill("SIGTERM", {
+    this.serveChild?.kill('SIGTERM', {
       forceKillAfterTimeout: 2000,
     })
   }
 
   public async report() {
     await ensureDir(UPLOAD_DIR)
-    await writeFile(path.resolve(UPLOAD_DIR, "./debug-log.txt"), this.debugLog)
+    await writeFile(path.resolve(UPLOAD_DIR, './debug-log.txt'), this.debugLog)
     await copyFile(
-      path.resolve(this.dir, "./CPU.cpuprofile"),
-      path.resolve(UPLOAD_DIR, "./CPU.cpuprofile")
+      path.resolve(this.dir, './CPU.cpuprofile'),
+      path.resolve(UPLOAD_DIR, './CPU.cpuprofile')
     )
     console.log(colors.green(`Benchmark report saved to ${UPLOAD_DIR}`))
   }

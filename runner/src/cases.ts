@@ -1,4 +1,4 @@
-import { benchmark as perf1 } from "./cases/perf-1"
+import { benchmark as perf1 } from './cases/perf-1'
 
 export async function runBenchmarks({
   viteDir,

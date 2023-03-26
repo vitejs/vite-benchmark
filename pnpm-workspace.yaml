@@ -1,4 +1,0 @@
-packages:
-  - "cases/**"
-  - "packages/**"
-  - "!packages/vite-tar/**"
