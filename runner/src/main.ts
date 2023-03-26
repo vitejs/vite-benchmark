@@ -19,6 +19,7 @@ const octokit = new Octokit({})
 async function cloneVite(ref: string = `heads/${MAIN_BRANCH}`) {
   // https://docs.github.com/en/actions/learn-github-actions/variables
   const runnerTempDir = process.env['RUNNER_TEMP'] || os.tmpdir()
+
   const viteTempDir = await fsp.mkdtemp(path.join(runnerTempDir, 'vite'))
   const { data: refData } = await octokit.rest.git.getRef({
     owner: REPO_OWNER,
@@ -107,4 +108,5 @@ async function main() {
     viteBin,
   })
 }
+
 main()

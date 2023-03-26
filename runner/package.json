@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build --mode production",
-    "dev": "NODE_ENV=development tsx ./src/main.ts"
+    "start:dev": "NODE_ENV=development tsx ./src/main.ts",
+    "start:prod": "tsx ./src/main.ts"
   },
   "dependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",

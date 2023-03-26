@@ -1,7 +1,7 @@
 {
   "packageManager": "pnpm@7.12.2",
   "scripts": {
-    "dev": "pnpm -r dev"
+    "start": "(cd runner && pnpm start:prod)"
   },
   "devDependencies": {
     "prettier": "^2.8.4"

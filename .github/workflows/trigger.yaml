@@ -1,0 +1,52 @@
+name: Benchmark (comment trigger)
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    if: github.repository == 'fi3ework/vite-benchmark' && github.event.issue.pull_request && startsWith(github.event.comment.body, '/benchmark ')
+    steps:
+      - uses: actions/github-script@v6
+        id: reaction
+        with:
+          script: |
+            const user = context.payload.sender.login
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'rocket',
+            })
+      - uses: actions/github-script@v6
+        id: get-pr-data
+        with:
+          script: |
+            console.log(`Get PR info: ${context.repo.owner}/${context.repo.repo}#${context.issue.number}`)
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            })
+            return {
+              repoName: pr.head.repo.full_name,
+              ref: pr.head.ref
+            }
+      - uses: actions/github-script@v6
+        id: trigger
+        with:
+          script: |
+            const prData = ${{ steps.get-pr-data.outputs.result }}
+            console.log(`Run /benchmark, repo: ${prData.repoName} ref: ${prData.ref}`)
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'benchmark.yml',
+              ref: 'main',
+              inputs: {
+                repo: prData.repoName,
+                ref: prData.ref,
+              }
+            })

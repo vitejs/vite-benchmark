@@ -1,0 +1,58 @@
+name: Benchmark
+on:
+  schedule:
+    # At the end of every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      vite_repo:
+        description: 'benchmark repository to use'
+        required: true
+        type: string
+        default: 'vitejs/vite'
+      vite_ref:
+        description: 'ref to use'
+        required: true
+        type: string
+        default: 'main'
+jobs:
+  benchmark:
+    name: Run benchmark
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest]
+    steps:
+      # clone benchmark repository
+      - uses: actions/checkout@v3
+
+      # clone vite repository
+      - uses: actions/checkout@v3
+        with:
+          path: vite
+          repository: ${{ inputs.vite_repo }}
+          ref: ${{ inputs.vite_ref }}
+          token: ${{ secrets.GH_PAT }} # `GH_PAT` is a secret that contains your PAT
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 7.9.5
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: cd runner && pnpm install
+
+      - name: Run benchmark
+        run: pnpm run start
+
+      - name: Upload benchmark
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results-main
+          path: ./upload
+          if-no-files-found: ignore
