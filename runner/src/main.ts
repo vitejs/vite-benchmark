@@ -56,8 +56,7 @@ async function cloneVite(ref: string = `heads/${MAIN_BRANCH}`) {
 }
 
 async function main() {
-  // const viteDir = await cloneVite()
-  const viteDir = `/var/folders/tx/yg4l4gqs7wz85f_84jm799pr0000gn/T/viteouQd99/vite`
+  const viteDir = await cloneVite()
   console.log(colors.cyan(`Vite cloned in ${viteDir}`))
   console.log(colors.cyan(`Start to install dependencies for Vite`))
 
@@ -68,7 +67,7 @@ async function main() {
   await $$`pnpm i`
 
   console.log(colors.cyan(`Start run 'pnpm build' for Vite`))
-  // await $$`pnpm build`
+  await $$`pnpm build`
 
   console.log(colors.cyan(`Start run 'pnpm pack' for Vite`))
   await execa('pnpm', ['pack'], {
@@ -105,7 +104,6 @@ async function main() {
   const viteBin = path.resolve(PROJECT_DIR, 'vite/bin/vite.js')
 
   await runBenchmarks({
-    viteDir,
     viteBin,
   })
 }

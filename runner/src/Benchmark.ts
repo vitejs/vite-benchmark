@@ -26,7 +26,7 @@ export class Benchmark {
 
   public async installDeps() {
     // https://github.com/npm/cli/issues/2339
-    await execa('npm', ['i', '--install-links'], {
+    await execa('npm', ['i', '--install-links', '--no-save'], {
       cwd: this.dir,
       stdio: 'inherit',
     })
@@ -54,7 +54,7 @@ export class Benchmark {
       [
         '--cpu-prof',
         '--cpu-prof-name=CPU.cpuprofile',
-        '../../vite/bin/vite.js',
+        './node_modules/vite/bin/vite.js',
         'dev',
         '--debug',
         '--force',
