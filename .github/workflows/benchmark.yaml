@@ -36,8 +36,6 @@ jobs:
           token: ${{ secrets.GH_PAT }} # `GH_PAT` is a secret that contains your PAT
 
       - uses: pnpm/action-setup@v2
-        with:
-          version: 7.9.5
 
       - uses: actions/setup-node@v3
         with:
@@ -48,7 +46,7 @@ jobs:
         run: cd runner && pnpm install
 
       - name: Run benchmark
-        run: pnpm run start
+        run: pnpm run benchmark
 
       - name: Upload benchmark
         uses: actions/upload-artifact@v2

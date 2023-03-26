@@ -3,9 +3,8 @@
   "name": "@vite-benchmark/scripts",
   "type": "module",
   "scripts": {
-    "build": "vite build --mode production",
-    "start:dev": "NODE_ENV=development tsx ./src/main.ts",
-    "start:prod": "tsx ./src/main.ts"
+    "benchmark:dev": "NODE_ENV=development tsx ./src/main.ts",
+    "benchmark:prod": "tsx ./src/main.ts"
   },
   "dependencies": {
     "@tsconfig/node18-strictest-esm": "^1.0.1",
