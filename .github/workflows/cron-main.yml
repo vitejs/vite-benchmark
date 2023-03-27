@@ -28,7 +28,7 @@ jobs:
               ref: 'main',
               inputs: {
                 vite_repo: 'vitejs/vite',
-                vite_ref: mainSha,
-                upload_main: true,
+                vite_sha: mainSha,
+                upload_pages_data: true,
               }
             })

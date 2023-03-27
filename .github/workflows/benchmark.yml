@@ -7,12 +7,17 @@ on:
         required: true
         type: string
         default: 'vitejs/vite'
-      vite_ref:
+      vite_sha:
         description: 'ref to use'
         required: true
         type: string
         default: 'main'
-      upload_main:
+      upload_pages_data:
+        description: 'should upload data to gh pages'
+        required: true
+        type: boolean
+        default: false
+      upload_artifact:
         description: 'should upload data as main branch'
         required: true
         type: boolean
@@ -22,8 +27,9 @@ jobs:
     name: Run benchmark
     env:
       BENCHMARK_REPO: ${{ inputs.vite_repo }}
-      BENCHMARK_REF: ${{ inputs.vite_ref }}
-      UPLOAD_MAIN: ${{ inputs.upload_main }}
+      BENCHMARK_REF: ${{ inputs.vite_sha }}
+      UPLOAD_PAGES_DATA: ${{ inputs.upload_pages_data }}
+      UPLOAD_ARTIFACT: ${{ inputs.upload_artifact }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -37,7 +43,7 @@ jobs:
         with:
           path: vite
           repository: ${{ inputs.vite_repo }}
-          ref: ${{ inputs.vite_ref }}
+          ref: ${{ inputs.vite_sha }}
           token: ${{ secrets.GH_PAT }} # `GH_PAT` is a secret that contains your PAT
 
       - uses: pnpm/action-setup@v2

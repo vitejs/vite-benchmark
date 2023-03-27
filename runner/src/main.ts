@@ -126,7 +126,8 @@ async function main() {
   await runBenchmarks({
     viteRepo: process.env['BENCHMARK_REPO']!,
     viteRef: process.env['BENCHMARK_REF']!,
-    uploadMain: process.env['upload_main'] === 'true' ? true : false,
+    uploadPagesData: process.env['UPLOAD_PAGES_DATA'] === 'true' ? true : false,
+    uploadArtifact: process.env['UPLOAD_ARTIFACT'] === 'true' ? true : false,
   })
 }
 

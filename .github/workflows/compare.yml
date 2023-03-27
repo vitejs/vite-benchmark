@@ -1,0 +1,97 @@
+name: Compare
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_vite_repo:
+        description: 'compare baseline repository'
+        required: true
+        type: string
+        default: 'vitejs/vite'
+      base_vite_ref:
+        description: 'compare baseline ref'
+        required: true
+        type: string
+        default: 'heads/main'
+      to_vite_repo:
+        description: 'compare target repository'
+        required: true
+        type: string
+      to_vite_ref:
+        description: 'compare target ref'
+        required: true
+        type: string
+jobs:
+  compare-benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        name: Display base benchmark job
+        with:
+          script: |
+            const { from_vite_repo, from_vite_ref } = context.payload.inputs
+            let sha = from_vite_ref
+            if (from_vite_ref.startsWith('heads/') || from_vite_ref.startsWith('tags/')) {
+              const [owner, repo] = context.payload.inputs.to_vite_repo.split('/')
+              const { data: toData } = await github.rest.git.getRef({
+                owner,
+                repo,
+                ref: from_vite_ref,
+                })
+              sha = toData.object.sha
+            }
+
+            const baseSha = baseData.object.sha
+            const workflow = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: 'vite-benchmark',
+              workflow_id: 'benchmark.yml',
+              ref: 'main',
+              inputs: {
+                vite_repo: base_vite_repo,
+                vite_sha: baseSha,
+                upload_pages_data: false,
+              }
+            })
+
+            console.log('baseSha', workflow)
+
+            // core.setOutput("", execute)
+      - uses: actions/github-script@v6
+        name: Display to benchmark job
+        with:
+          script: |
+            const { to_vite_repo, to_vite_ref } = context.payload.inputs
+            let sha = to_vite_ref
+            if (to_vite_ref.startsWith('heads/') || to_vite_ref.startsWith('tags/')) {
+              const [owner, repo] = context.payload.inputs.to_vite_repo.split('/')
+              const { data: toData } = await github.rest.git.getRef({
+                owner,
+                repo,
+                ref: to_vite_ref,
+                })
+              sha = toData.object.sha
+            }
+
+            const workflow = await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: 'vite-benchmark',
+              workflow_id: 'benchmark.yml',
+              ref: 'main',
+              inputs: {
+                vite_repo: to_vite_repo,
+                vite_sha: sha,
+                upload_pages_data: false,
+              }
+            })
+
+            console.log('toSha', workflow)
+      - uses: actions/github-script@v6
+        name: Display artifacts
+        with:
+          script: |
+            const baseArtifacts = await github.rest.checks.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              check_run_id: last_run_id,
+            });
