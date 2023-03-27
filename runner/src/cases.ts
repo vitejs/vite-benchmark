@@ -1,6 +1,11 @@
-import { benchmark as perf1 } from './cases/perf-1'
+import { benchmark as genPerf1 } from './cases/perf-1'
 
-export async function runBenchmarks({ viteBin }: { viteBin: string }) {
-  // perf-1
-  perf1.run()
+export async function runBenchmarks({
+  viteRef,
+}: {
+  viteRepo: string
+  viteRef: string
+  uploadMain: boolean
+}) {
+  genPerf1(viteRef).run()
 }

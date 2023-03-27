@@ -1,13 +1,13 @@
-import path from 'path'
-
-import { CASE_DIR } from '../constant'
 import { Benchmark } from '../Benchmark'
 
-export const benchmark = new Benchmark({
-  dir: path.resolve(CASE_DIR, 'perf-1'),
-  scripts: async () => {
-    await benchmark.startServer({
-      onDepsBundled: () => benchmark.stopServer(),
-    })
-  },
-})
+export const benchmark = (sha: string) =>
+  new Benchmark({
+    sha,
+    name: 'perf-1',
+    viteCache: './node_modules/.vite',
+    dist: './dist',
+    metrics: {
+      devPrebundle: true,
+      build: true,
+    },
+  })

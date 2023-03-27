@@ -1,8 +1,5 @@
 name: Benchmark
 on:
-  schedule:
-    # At the end of every day
-    - cron: '0 0 * * *'
   workflow_dispatch:
     inputs:
       vite_repo:
@@ -15,13 +12,21 @@ on:
         required: true
         type: string
         default: 'main'
+      upload_main:
+        description: 'should upload data as main branch'
+        required: true
+        type: boolean
+        default: false
 jobs:
   benchmark:
     name: Run benchmark
+    env:
+      BENCHMARK_REPO: ${{ inputs.vite_repo }}
+      BENCHMARK_REF: ${{ inputs.vite_ref }}
+      UPLOAD_MAIN: ${{ inputs.upload_main }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ubuntu-latest, windows-latest, macos-latest]
         os: [ubuntu-latest]
     steps:
       # clone benchmark repository

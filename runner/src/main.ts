@@ -17,12 +17,13 @@ import {
   PROJECT_DIR,
   REPO_NAME,
   REPO_OWNER,
+  UPLOAD_DIR,
   VITE_DIR,
 } from './constant'
 
 const octokit = new Octokit({})
 
-async function cloneVite(ref: string = `heads/${MAIN_BRANCH}`) {
+async function cloneVite() {
   // https://docs.github.com/en/actions/learn-github-actions/variables
   const runnerTempDir = process.env['RUNNER_TEMP'] || os.tmpdir()
 
@@ -37,12 +38,14 @@ async function cloneVite(ref: string = `heads/${MAIN_BRANCH}`) {
     const { data: refData } = await octokit.rest.git.getRef({
       owner: REPO_OWNER,
       repo: REPO_NAME,
-      ref,
+      ref: MAIN_BRANCH,
     })
     const mainSha = refData.object.sha
     const shortName = `vite-${mainSha.slice(0, 8)}`
     const zipPath = path.resolve(tempDir, `./${shortName}.zip`)
-    console.log(colors.yellow(`Cloning vitejs/vite@${ref} into ${zipPath}`))
+    console.log(
+      colors.yellow(`Cloning vitejs/vite@${MAIN_BRANCH} into ${zipPath}`)
+    )
     const { url: zipUrl } = await octokit.rest.repos.downloadZipballArchive({
       owner: REPO_OWNER,
       repo: REPO_NAME,
@@ -68,6 +71,8 @@ async function cloneVite(ref: string = `heads/${MAIN_BRANCH}`) {
 }
 
 async function main() {
+  await $`printenv`
+
   const viteDir = await cloneVite()
   console.log(colors.cyan(`Vite cloned in ${viteDir}`))
   console.log(colors.cyan(`Start to install dependencies for Vite`))
@@ -114,10 +119,14 @@ async function main() {
     path.resolve(PROJECT_DIR, './vite')
   )
 
-  const viteBin = path.resolve(PROJECT_DIR, 'vite/bin/vite.js')
+  if (fs.existsSync(UPLOAD_DIR)) {
+    fs.rmSync(UPLOAD_DIR, { recursive: true })
+  }
 
   await runBenchmarks({
-    viteBin,
+    viteRepo: process.env['BENCHMARK_REPO']!,
+    viteRef: process.env['BENCHMARK_REF']!,
+    uploadMain: process.env['upload_main'] === 'true' ? true : false,
   })
 }
 

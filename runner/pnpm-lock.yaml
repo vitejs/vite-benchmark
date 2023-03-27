@@ -13,6 +13,7 @@ specifiers:
   got: ^12.6.0
   octokit: ^2.0.14
   picocolors: ^1.0.0
+  strip-ansi: ^7.0.1
   tar: ^6.1.13
   tar-fs: ^2.1.1
   tsx: ^3.12.3
@@ -30,6 +31,7 @@ dependencies:
   got: 12.6.0
   octokit: 2.0.14
   picocolors: 1.0.0
+  strip-ansi: 7.0.1
   tar: 6.1.13
   tar-fs: 2.1.1
   tsx: 3.12.6
@@ -603,6 +605,11 @@ packages:
       indent-string: 4.0.0
     dev: false
 
+  /ansi-regex/6.0.1:
+    resolution: {integrity: sha512-n5M855fKb2SsfMIiFFoVrABHJC8QtHwVx+mHWP3QcEqBHYienj5dHSgjbxtC0WEZXYt4wcD6zrQElDPhFuZgfA==}
+    engines: {node: '>=12'}
+    dev: false
+
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
     dev: false
@@ -1127,6 +1134,13 @@ packages:
     resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
     dependencies:
       safe-buffer: 5.2.1
+    dev: false
+
+  /strip-ansi/7.0.1:
+    resolution: {integrity: sha512-cXNxvT8dFNRVfhVME3JAe98mkXDYN2O1l7jmcwMnOslDeESg1rF/OZMtK0nRAhiari1unG5cD4jG3rapUAkLbw==}
+    engines: {node: '>=12'}
+    dependencies:
+      ansi-regex: 6.0.1
     dev: false
 
   /strip-final-newline/3.0.0:

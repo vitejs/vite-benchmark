@@ -1,0 +1,34 @@
+name: Cron (main branch)
+
+on:
+  workflow_dispatch:
+  schedule:
+    # At the end of every day
+    - cron: '0 0 * * *'
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            const { data: refData } = await github.rest.git.getRef({
+              owner: 'vitejs',
+              repo: 'vite',
+              ref: 'heads/main',
+            })
+
+            const mainSha = refData.object.sha
+
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: 'vite-benchmark',
+              workflow_id: 'benchmark.yml',
+              ref: 'main',
+              inputs: {
+                vite_repo: 'vitejs/vite',
+                vite_ref: mainSha,
+                upload_main: true,
+              }
+            })
