@@ -70,6 +70,13 @@ export class Benchmark {
     await this.startServer({
       onDepsBundled: () => this.stopServer(),
     })
+
+    setTimeout(() => {
+      if (this.serveChild?.killed) return
+      console.log(colors.red(`Timeout for dev-prebundle`))
+      this.stopServer()
+    }, 2 * 60 * 1000)
+
     await this.upload('dev-prebundle-', 'artifact')
     await this.clean()
   }
@@ -143,7 +150,10 @@ export class Benchmark {
 
     this.serveChild.stderr?.on('data', (data: Buffer) => {
       this.debugLog += data.toString()
-      if (data.toString().includes('Dependencies bundled in')) {
+      if (
+        data.toString().includes('deps bundled in') ||
+        data.toString().includes('Dependencies bundled in')
+      ) {
         console.log(colors.cyan(`Server stopped`))
         onDepsBundled?.()
       }

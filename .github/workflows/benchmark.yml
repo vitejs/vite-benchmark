@@ -64,16 +64,16 @@ jobs:
         id: calc_artifact_name
         with:
           script: |
-            console.log('😧', JSON.stringify(context.payload.inputs, null, 2))
-            const repoName = context.payload.inputs.vite_repo.split('/').join('___')
-            const shortSha = context.payload.inputs.vite_sha.slice(0, 7)
-            const artifactName = `benchmark-artifact-${repoName}-${shortSha}`
+            // can not use context.payload.inputs.vite_repo here as it's parent workflow's inputs
+            const repoName = '${{ inputs.vite_repo }}'.split('/').join('___')
+            const shortSha = '${{ inputs.vite_sha }}'.slice(0, 7)
+            const artifactName = `benchmark-artifact-${repoName}___${shortSha}`
             // artifact name should sync with ./compare.yml
             core.setOutput('artifact_name', artifactName)
 
       - name: Upload benchmark
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ steps.calc_artifact_name.artifact_name }}
+          name: ${{ steps.calc_artifact_name.outputs.artifact_name }}
           path: ./artifacts
           if-no-files-found: ignore

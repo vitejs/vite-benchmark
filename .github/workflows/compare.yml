@@ -25,14 +25,14 @@ jobs:
   prepare_compare_benchmark:
     runs-on: ubuntu-latest
     outputs:
-      from_vite_repo: ${{ steps.calc_base_workflow_inputs.outputs.from_vite_repo }}
-      from_vite_sha: ${{ steps.calc_base_workflow_inputs.outputs.from_vite_sha }}
+      base_vite_repo: ${{ steps.calc_base_workflow_inputs.outputs.base_vite_repo }}
+      base_vite_sha: ${{ steps.calc_base_workflow_inputs.outputs.base_vite_sha }}
       to_vite_repo: ${{ steps.calc_base_workflow_inputs.outputs.to_vite_repo }}
       to_vite_sha: ${{ steps.calc_base_workflow_inputs.outputs.to_vite_sha }}
     steps:
       - uses: actions/github-script@v6
         id: calc_base_workflow_inputs
-        name: Display base benchmark job
+        name: Calculate base benchmark inputs
         with:
           script: |
             const { base_vite_repo, base_vite_ref, to_vite_repo, to_vite_ref } = context.payload.inputs
@@ -44,7 +44,7 @@ jobs:
                 owner,
                 repo,
                 ref: base_vite_ref,
-                })
+              })
               baseSha = toData.object.sha
             }
 
@@ -54,12 +54,12 @@ jobs:
                 owner,
                 repo,
                 ref: to_vite_ref,
-                })
+              })
               toSha = toData.object.sha
             }
 
-            core.setOutput("from_vite_repo", base_vite_repo)
-            core.setOutput("from_vite_sha", baseSha)
+            core.setOutput("base_vite_repo", base_vite_repo)
+            core.setOutput("base_vite_sha", baseSha)
             core.setOutput("to_vite_repo", to_vite_repo)
             core.setOutput("to_vite_sha", toSha)
   call_base_benchmark_workflow:
@@ -67,8 +67,8 @@ jobs:
     secrets: inherit
     needs: [prepare_compare_benchmark]
     with:
-      vite_repo: ${{ needs.prepare_compare_benchmark.outputs.from_vite_repo }}
-      vite_sha: ${{ needs.prepare_compare_benchmark.outputs.from_vite_sha }}
+      vite_repo: ${{ needs.prepare_compare_benchmark.outputs.base_vite_repo }}
+      vite_sha: ${{ needs.prepare_compare_benchmark.outputs.base_vite_sha }}
       upload_pages_data: false
       upload_artifact: true
   call_to_benchmark_workflow:
@@ -81,23 +81,28 @@ jobs:
       upload_pages_data: false
       upload_artifact: true
   post_call_workflow:
-    needs: [call_base_benchmark_workflow, call_to_benchmark_workflow]
+    needs:
+      [
+        prepare_compare_benchmark,
+        call_base_benchmark_workflow,
+        call_to_benchmark_workflow,
+      ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v6
         name: Report benchmark comparison link
         with:
           script: |
-            const base = 'https://fi3ework.github.io/vite-benchmark-report/compare'
+            const base = 'https://fi3ework.github.io/vite-benchmark/compare'
             // artifact name should sync with ./benchmark.yml
-            const { from_vite_repo, from_vite_sha, to_vite_repo, to_vite_sha } = context.payload.inputs
-            const baseRepoName = from_vite_repo.split('/')[1].join('___')
-            const baseShortSha = from_vite_sha.slice(0, 7)
-            const baseArtifactName = `benchmark-artifact-${baseRepoName}-${baseShortSha}`
+            const { base_vite_repo, to_vite_repo } = context.payload.inputs
+            const baseRepoName = base_vite_repo.split('/').join('___')
+            const baseShortSha = '${{ needs.prepare_compare_benchmark.outputs.base_vite_sha }}'.slice(0, 7)
+            const baseArtifactId = `${baseRepoName}___${baseShortSha}`
 
-            const toRepoName = to_vite_repo.split('/')[1].join('___')
-            const toShortSha = to_vite_sha.slice(0, 7)
-            const toArtifactName = `benchmark-artifact-${toRepoName}-${toShortSha}`
+            const toRepoName = to_vite_repo.split('/').join('___')
+            const toShortSha = '${{ needs.prepare_compare_benchmark.outputs.to_vite_sha }}'.slice(0, 7)
+            const toArtifactId = `${toRepoName}___${toShortSha}`
 
-            const link = `${base}?base=${toRepoName}&to=${toArtifactName}`
+            const link = `${base}?base=${baseArtifactId}&to=${toArtifactId}`
             core.info(`Benchmark report link: ${link}`)
