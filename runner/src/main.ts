@@ -13,11 +13,12 @@ import tar from 'tar'
 
 import { runBenchmarks } from './cases'
 import {
+  ARTIFACT_DIR,
   MAIN_BRANCH,
   PROJECT_DIR,
   REPO_NAME,
   REPO_OWNER,
-  UPLOAD_DIR,
+  DATA_DIR,
   VITE_DIR,
 } from './constant'
 
@@ -119,9 +120,8 @@ async function main() {
     path.resolve(PROJECT_DIR, './vite')
   )
 
-  if (fs.existsSync(UPLOAD_DIR)) {
-    fs.rmSync(UPLOAD_DIR, { recursive: true })
-  }
+  await fsExtra.remove(DATA_DIR)
+  await fsExtra.remove(ARTIFACT_DIR)
 
   await runBenchmarks({
     viteRepo: process.env['BENCHMARK_REPO']!,

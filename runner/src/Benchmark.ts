@@ -5,7 +5,7 @@ import path from 'path'
 import colors from 'picocolors'
 import stripAnsi from 'strip-ansi'
 
-import { CASE_DIR, UPLOAD_DIR } from './constant'
+import { ARTIFACT_DIR, CASE_DIR, DATA_DIR } from './constant'
 
 import type { ExecaChildProcess } from 'execa'
 
@@ -70,13 +70,13 @@ export class Benchmark {
     await this.startServer({
       onDepsBundled: () => this.stopServer(),
     })
-    await this.upload('dev-prebundle-')
+    await this.upload('dev-prebundle-', 'artifact')
     await this.clean()
   }
 
   public async metricBuild() {
     await this.startBuild()
-    await this.upload('build-')
+    await this.upload('build-', 'artifact')
     await this.clean()
   }
 
@@ -162,18 +162,21 @@ export class Benchmark {
     })
   }
 
-  public async upload(prefix: string) {
-    const uploadDir = path.resolve(UPLOAD_DIR, this.sha)
-    await ensureDir(uploadDir)
+  public async upload(prefix: string, type: 'artifact' | 'data') {
+    const dataDir = path.resolve(DATA_DIR, this.sha)
+    const artifactDir = path.resolve(ARTIFACT_DIR)
+    const target = type === 'artifact' ? artifactDir : dataDir
+
+    await ensureDir(target)
     await writeFile(
-      path.resolve(uploadDir, `./${prefix}debug-log.txt`),
+      path.resolve(target, `./${prefix}debug-log.txt`),
       stripAnsi(this.debugLog)
     )
     await copyFile(
       path.resolve(this.caseDir, './CPU.cpuprofile'),
-      path.resolve(uploadDir, `./${prefix}CPU.cpuprofile`)
+      path.resolve(target, `./${prefix}CPU.cpuprofile`)
     )
 
-    console.log(colors.green(`Benchmark report saved to ${uploadDir}`))
+    console.log(colors.green(`Benchmark report saved to ${dataDir}`))
   }
 }

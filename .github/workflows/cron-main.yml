@@ -7,10 +7,13 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
-  daily:
+  calc_inputs:
     runs-on: ubuntu-latest
+    outputs:
+      vite_sha: ${{ steps.calc_workflow_inputs.outputs.vite_sha }}
     steps:
       - uses: actions/github-script@v6
+        id: calc_workflow_inputs
         with:
           script: |
             const { data: refData } = await github.rest.git.getRef({
@@ -20,15 +23,13 @@ jobs:
             })
 
             const mainSha = refData.object.sha
-
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: 'vite-benchmark',
-              workflow_id: 'benchmark.yml',
-              ref: 'main',
-              inputs: {
-                vite_repo: 'vitejs/vite',
-                vite_sha: mainSha,
-                upload_pages_data: true,
-              }
-            })
+            core.setOutput("vite_sha", mainSha)
+  call_workflow:
+    uses: ./.github/workflows/benchmark.yml
+    secrets: inherit
+    needs: [calc_inputs]
+    with:
+      vite_repo: vitejs/vite
+      vite_sha: ${{ needs.calc_inputs.outputs.vite_sha }}
+      upload_pages_data: true
+      upload_artifact: true

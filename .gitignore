@@ -108,3 +108,4 @@ packages/upload
 *.cpuprofile
 /upload
 /vite
+/artifacts
