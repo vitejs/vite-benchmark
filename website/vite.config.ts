@@ -22,7 +22,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        commit: path.resolve(__dirname, './index.html'),
+        main: path.resolve(__dirname, 'index.html'),
+        commit: path.resolve(__dirname, './commit/index.html'),
       },
     },
   },
