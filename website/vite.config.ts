@@ -2,10 +2,7 @@ import path from 'node:path'
 import fs from 'node:fs'
 import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
-import { createRequire } from 'node:module'
 import basicSsl from '@vitejs/plugin-basic-ssl'
-
-const require = createRequire(import.meta.url)
 
 import react from '@vitejs/plugin-react'
 

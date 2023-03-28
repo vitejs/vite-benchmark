@@ -44,7 +44,6 @@ export const CommitPage = () => {
     onSuccess: async (data) => {
       const result = await unzipArtifact(data.url)
       setProfiles(result)
-      console.log('👴', result)
     },
   })
 

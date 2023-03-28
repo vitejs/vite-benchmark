@@ -1,18 +1,15 @@
 import { endpoint } from '@octokit/endpoint'
-// import { GH_TOKEN } from '../token'
 import type { Endpoints } from '@octokit/types'
 import ky from 'ky'
 
 type ListArtifactsResponse =
   Endpoints['GET /repos/{owner}/{repo}/actions/artifacts']['response']['data']
-type DownloadArtifactsResponse =
-  Endpoints['GET /repos/{owner}/{repo}/actions/artifacts/{artifact_id}/{archive_format}']['response']['data']
 
 const tokenFromQuery = new URLSearchParams(window.location.search).get('pat')
 
 const ep = endpoint.defaults({
   headers: {
-    authorization: `token ${tokenFromQuery}`,
+    authorization: tokenFromQuery ? `token ${tokenFromQuery}` : undefined,
   },
 })
 
@@ -41,6 +38,5 @@ export const downloadArtifacts = async (artifactId: number | string) => {
 
   const { url, ...options } = request
   const data = await ky.get(url, options as any)
-  // .json<DownloadArtifactsResponse>()
   return data
 }
