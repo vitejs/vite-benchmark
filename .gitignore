@@ -104,8 +104,9 @@ dist
 .tern-port
 
 # vite-benchmark
-packages/upload
 *.cpuprofile
 /upload
-/vite
 /artifacts
+/vite
+/website/src/token.ts
+/website/public/speedscope

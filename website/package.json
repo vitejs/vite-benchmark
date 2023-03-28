@@ -4,20 +4,28 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "postinstall": "node ./postinstall.mjs",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@octokit/endpoint": "^7.0.5",
+    "@octokit/types": "^9.0.0",
+    "@tanstack/react-query": "^4.28.0",
+    "ky": "^0.33.3",
+    "octokit": "^2.0.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-query": "^3.39.3",
-    "speedscope": "^1.15.0"
+    "react-router": "^6.9.0",
+    "react-router-dom": "^6.9.0",
+    "speedscope": "1.15.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.10",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-react": "^3.1.0",
     "typescript": "^4.9.3",
     "vite": "^4.2.0"

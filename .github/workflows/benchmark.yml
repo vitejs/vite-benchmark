@@ -65,9 +65,9 @@ jobs:
         with:
           script: |
             // can not use context.payload.inputs.vite_repo here as it's parent workflow's inputs
-            const repoName = '${{ inputs.vite_repo }}'.split('/').join('___')
+            const repoName = '${{ inputs.vite_repo }}'.split('/').join('__')
             const shortSha = '${{ inputs.vite_sha }}'.slice(0, 7)
-            const artifactName = `benchmark-artifact-${repoName}___${shortSha}`
+            const artifactName = `benchmark-artifact-${repoName}__${shortSha}`
             // artifact name should sync with ./compare.yml
             core.setOutput('artifact_name', artifactName)
 
