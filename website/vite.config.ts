@@ -19,22 +19,10 @@ export default defineConfig({
     exclude: ['sss'],
   },
   plugins: [react(), basicSsl()],
-  // server: {
-  //   proxy: {
-  //     '/speedscope': {
-  //       headers: {
-  //         host: 'fi3ework.github.io',
-  //       },
-  //       target: `https://fi3ework.github.io/`,
-  //       secure: true,
-  //       // changeOrigin: true,
-  //     },
-  //   },
-  // },
   build: {
     rollupOptions: {
       input: {
-        compare: path.resolve(__dirname, './index.html'),
+        commit: path.resolve(__dirname, './index.html'),
       },
     },
   },
