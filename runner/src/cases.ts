@@ -8,5 +8,5 @@ export async function runBenchmarks({
   uploadPagesData: boolean
   uploadRelease: boolean
 }) {
-  genPerf1(viteRef).run()
+  await genPerf1(viteRef).run()
 }

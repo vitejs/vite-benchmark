@@ -60,22 +60,23 @@ jobs:
         run: pnpm run benchmark
 
       - uses: actions/github-script@v6
-        name: Calculate relase name
-        id: calc_release_name
+        name: Calculate release name
+        id: calc_release_tag
         with:
           script: |
             // can not use context.payload.inputs.vite_repo here as it's parent workflow's inputs
             const repoName = '${{ inputs.vite_repo }}'.split('/').join('@')
             const shortSha = '${{ inputs.vite_sha }}'.slice(0, 7)
-            const relaseTag = `benchmark@${repoName}@${shortSha}`
+            const releaseTag = `benchmark@${repoName}@${shortSha}`
             // release name should sync with ./compare.yml
             core.setOutput('release_tag', releaseTag)
+            core.setOutput('vite_short_sha', shortSha)
       - uses: ncipollo/release-action@v1
         name: Create release
         with:
-          artifacts: upload
-          tag: ${{ steps.calc_release_name.outputs.release_tag }}
+          artifacts: ./release/benchmark.zip
+          tag: ${{ steps.calc_release_tag.outputs.release_tag }}
           commit: main
-          name: Benchmark generated from ${{ inputs.vite_repo }}@${{ inputs.vite_sha }}
+          name: Benchmark of ${{ inputs.vite_repo }}@${{ steps.calc_release_tag.outputs.vite_short_sha }}
           prerelease: true
           allowUpdates: true

@@ -129,6 +129,13 @@ async function main() {
     uploadPagesData: process.env['UPLOAD_PAGES_DATA'] === 'true' ? true : false,
     uploadRelease: process.env['UPLOAD_RELEASE'] === 'true' ? true : false,
   })
+
+  if (process.env['UPLOAD_RELEASE']) {
+    // should zip the release dir
+    const zip = new AdmZip()
+    zip.addLocalFolder(RELEASE_DIR)
+    zip.writeZip(path.resolve(RELEASE_DIR, 'benchmark.zip'))
+  }
 }
 
 main()

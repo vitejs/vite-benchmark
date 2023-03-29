@@ -40,12 +40,12 @@ jobs:
             let toSha = to_vite_ref
             if (base_vite_ref.startsWith('heads/') || base_vite_ref.startsWith('tags/')) {
               const [owner, repo] = base_vite_repo.split('/')
-              const { data: toData } = await github.rest.git.getRef({
+              const { data: baseData } = await github.rest.git.getRef({
                 owner,
                 repo,
                 ref: base_vite_ref,
               })
-              baseSha = toData.object.sha
+              baseSha = baseData.object.sha
             }
 
             if (to_vite_ref.startsWith('heads/') || to_vite_ref.startsWith('tags/')) {
@@ -98,11 +98,11 @@ jobs:
             const { base_vite_repo, to_vite_repo } = context.payload.inputs
             const baseRepoName = base_vite_repo.split('/').join('__')
             const baseShortSha = '${{ needs.prepare_compare_benchmark.outputs.base_vite_sha }}'.slice(0, 7)
-            const baseReleaseId = `${baseRepoName}__${baseShortSha}`
+            const baseReleaseTag = `${baseRepoName}__${baseShortSha}`
 
             const toRepoName = to_vite_repo.split('/').join('__')
             const toShortSha = '${{ needs.prepare_compare_benchmark.outputs.to_vite_sha }}'.slice(0, 7)
-            const toReleaseId = `${toRepoName}__${toShortSha}`
+            const toReleaseTag = `${toRepoName}__${toShortSha}`
 
-            const link = `${base}?base=${baseReleaseId}&to=${toReleaseId}`
+            const link = `${base}?base=${baseReleaseTag}&to=${toReleaseTag}`
             core.info(`Benchmark report link: ${link}`)
