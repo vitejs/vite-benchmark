@@ -22,7 +22,7 @@ export const CommitPage = () => {
   const composeArtifactName = useCallback((str: string) => {
     const parsed = /(.*)\/(.*)@(.*)/.exec(str)
     const [, owner, name, sha] = parsed!
-    return `benchmark-artifact-${owner}___${name}-${sha}`
+    return `benchmark@${owner}@${name}@${sha}`
   }, [])
 
   const artifactName = composeArtifactName(searchParams.get('sha')!) // like vitejs/vite@0f9ad68

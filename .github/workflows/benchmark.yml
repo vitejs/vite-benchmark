@@ -17,7 +17,7 @@ on:
         required: true
         type: boolean
         default: false
-      upload_artifact:
+      upload_release:
         description: 'should upload data as main branch'
         required: true
         type: boolean
@@ -29,7 +29,7 @@ jobs:
       BENCHMARK_REPO: ${{ inputs.vite_repo }}
       BENCHMARK_REF: ${{ inputs.vite_sha }}
       UPLOAD_PAGES_DATA: ${{ inputs.upload_pages_data }}
-      UPLOAD_ARTIFACT: ${{ inputs.upload_artifact }}
+      UPLOAD_RELEASE: ${{ inputs.upload_release }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -60,20 +60,22 @@ jobs:
         run: pnpm run benchmark
 
       - uses: actions/github-script@v6
-        name: Calculate artifact name
-        id: calc_artifact_name
+        name: Calculate relase name
+        id: calc_release_name
         with:
           script: |
             // can not use context.payload.inputs.vite_repo here as it's parent workflow's inputs
-            const repoName = '${{ inputs.vite_repo }}'.split('/').join('__')
+            const repoName = '${{ inputs.vite_repo }}'.split('/').join('@')
             const shortSha = '${{ inputs.vite_sha }}'.slice(0, 7)
-            const artifactName = `benchmark-artifact-${repoName}__${shortSha}`
-            // artifact name should sync with ./compare.yml
-            core.setOutput('artifact_name', artifactName)
-
-      - name: Upload benchmark
-        uses: actions/upload-artifact@v2
+            const relaseTag = `benchmark@${repoName}@${shortSha}`
+            // release name should sync with ./compare.yml
+            core.setOutput('release_tag', releaseTag)
+      - uses: ncipollo/release-action@v1
+        name: Create release
         with:
-          name: ${{ steps.calc_artifact_name.outputs.artifact_name }}
-          path: ./artifacts
-          if-no-files-found: ignore
+          artifacts: upload
+          tag: ${{ steps.calc_release_name.outputs.release_tag }}
+          commit: main
+          name: Benchmark generated from ${{ inputs.vite_repo }}@${{ inputs.vite_sha }}
+          prerelease: true
+          allowUpdates: true

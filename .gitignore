@@ -106,7 +106,7 @@ dist
 # vite-benchmark
 *.cpuprofile
 /upload
-/artifacts
+/release
 /vite
 /website/src/token.ts
 /website/public/speedscope

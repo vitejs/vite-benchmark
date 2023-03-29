@@ -9,6 +9,6 @@ export const REPO_NAME = 'vite'
 export const MAIN_BRANCH = 'main'
 export const CASE_DIR = path.resolve(__dirname, '../../cases')
 export const DATA_DIR = path.resolve(__dirname, '../../upload')
-export const ARTIFACT_DIR = path.resolve(__dirname, '../../artifacts')
+export const RELEASE_DIR = path.resolve(__dirname, '../../release')
 export const PROJECT_DIR = path.resolve(__dirname, '../..')
 export const VITE_DIR = path.resolve(PROJECT_DIR, './vite')

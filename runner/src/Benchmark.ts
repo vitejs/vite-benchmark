@@ -5,7 +5,7 @@ import path from 'path'
 import colors from 'picocolors'
 import stripAnsi from 'strip-ansi'
 
-import { ARTIFACT_DIR, CASE_DIR, DATA_DIR } from './constant'
+import { RELEASE_DIR, CASE_DIR, DATA_DIR } from './constant'
 
 import type { ExecaChildProcess } from 'execa'
 
@@ -77,13 +77,13 @@ export class Benchmark {
       this.stopServer()
     }, 2 * 60 * 1000)
 
-    await this.upload('dev-prebundle-', 'artifact')
+    await this.upload('dev-prebundle-', 'release')
     await this.clean()
   }
 
   public async metricBuild() {
     await this.startBuild()
-    await this.upload('build-', 'artifact')
+    await this.upload('build-', 'release')
     await this.clean()
   }
 
@@ -172,10 +172,10 @@ export class Benchmark {
     })
   }
 
-  public async upload(prefix: string, type: 'artifact' | 'data') {
+  public async upload(prefix: string, type: 'release' | 'data') {
     const dataDir = path.resolve(DATA_DIR, this.sha)
-    const artifactDir = path.resolve(ARTIFACT_DIR)
-    const target = type === 'artifact' ? artifactDir : dataDir
+    const releaseDir = path.resolve(RELEASE_DIR)
+    const target = type === 'release' ? releaseDir : dataDir
 
     await ensureDir(target)
     await writeFile(

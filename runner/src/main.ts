@@ -13,7 +13,7 @@ import tar from 'tar'
 
 import { runBenchmarks } from './cases'
 import {
-  ARTIFACT_DIR,
+  RELEASE_DIR,
   MAIN_BRANCH,
   PROJECT_DIR,
   REPO_NAME,
@@ -121,13 +121,13 @@ async function main() {
   )
 
   await fsExtra.remove(DATA_DIR)
-  await fsExtra.remove(ARTIFACT_DIR)
+  await fsExtra.remove(RELEASE_DIR)
 
   await runBenchmarks({
     viteRepo: process.env['BENCHMARK_REPO']!,
     viteRef: process.env['BENCHMARK_REF']!,
     uploadPagesData: process.env['UPLOAD_PAGES_DATA'] === 'true' ? true : false,
-    uploadArtifact: process.env['UPLOAD_ARTIFACT'] === 'true' ? true : false,
+    uploadRelease: process.env['UPLOAD_RELEASE'] === 'true' ? true : false,
   })
 }
 

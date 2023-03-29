@@ -70,7 +70,7 @@ jobs:
       vite_repo: ${{ needs.prepare_compare_benchmark.outputs.base_vite_repo }}
       vite_sha: ${{ needs.prepare_compare_benchmark.outputs.base_vite_sha }}
       upload_pages_data: false
-      upload_artifact: true
+      upload_release: true
   call_to_benchmark_workflow:
     uses: ./.github/workflows/benchmark.yml
     secrets: inherit
@@ -79,7 +79,7 @@ jobs:
       vite_repo: ${{ needs.prepare_compare_benchmark.outputs.to_vite_repo }}
       vite_sha: ${{ needs.prepare_compare_benchmark.outputs.to_vite_sha }}
       upload_pages_data: false
-      upload_artifact: true
+      upload_release: true
   post_call_workflow:
     needs:
       [
@@ -94,15 +94,15 @@ jobs:
         with:
           script: |
             const base = 'https://fi3ework.github.io/vite-benchmark/compare'
-            // artifact name should sync with ./benchmark.yml
+            // release name should sync with ./benchmark.yml
             const { base_vite_repo, to_vite_repo } = context.payload.inputs
             const baseRepoName = base_vite_repo.split('/').join('__')
             const baseShortSha = '${{ needs.prepare_compare_benchmark.outputs.base_vite_sha }}'.slice(0, 7)
-            const baseArtifactId = `${baseRepoName}__${baseShortSha}`
+            const baseReleaseId = `${baseRepoName}__${baseShortSha}`
 
             const toRepoName = to_vite_repo.split('/').join('__')
             const toShortSha = '${{ needs.prepare_compare_benchmark.outputs.to_vite_sha }}'.slice(0, 7)
-            const toArtifactId = `${toRepoName}__${toShortSha}`
+            const toReleaseId = `${toRepoName}__${toShortSha}`
 
-            const link = `${base}?base=${baseArtifactId}&to=${toArtifactId}`
+            const link = `${base}?base=${baseReleaseId}&to=${toReleaseId}`
             core.info(`Benchmark report link: ${link}`)
