@@ -1,0 +1,207 @@
+2023-03-30T16:07:25.216Z vite:config bundled config file loaded in 184.32ms
+2023-03-30T16:07:25.232Z vite:config using resolved config: {
+  plugins: [
+    'vite:build-metadata',
+    'vite:pre-alias',
+    'alias',
+    'vite:react-babel',
+    'vite:react-refresh',
+    'vite:react-jsx',
+    'vite:modulepreload-polyfill',
+    'vite:resolve',
+    'vite:html-inline-proxy',
+    'vite:css',
+    'vite:esbuild',
+    'vite:json',
+    'vite:wasm-helper',
+    'vite:worker',
+    'vite:asset',
+    'vite:wasm-fallback',
+    'vite:define',
+    'vite:css-post',
+    'vite:build-html',
+    'vite:worker-import-meta-url',
+    'vite:asset-import-meta-url',
+    'vite:force-systemjs-wrap-complete',
+    'vite:watch-package-data',
+    'commonjs',
+    'vite:data-uri',
+    'vite:dynamic-import-vars',
+    'vite:import-glob',
+    'vite:build-import-analysis',
+    'vite:esbuild-transpile',
+    'vite:terser',
+    'vite:reporter',
+    'vite:load-fallback'
+  ],
+  optimizeDeps: {
+    disabled: 'build',
+    force: undefined,
+    include: [ 'react/jsx-dev-runtime' ],
+    esbuildOptions: { preserveSymlinks: false }
+  },
+  build: {
+    target: [ 'es2020', 'edge88', 'firefox78', 'chrome87', 'safari14' ],
+    cssTarget: [ 'es2020', 'edge88', 'firefox78', 'chrome87', 'safari14' ],
+    outDir: 'dist',
+    assetsDir: 'assets',
+    assetsInlineLimit: 4096,
+    cssCodeSplit: true,
+    sourcemap: false,
+    rollupOptions: {},
+    minify: 'esbuild',
+    terserOptions: {},
+    write: true,
+    emptyOutDir: null,
+    copyPublicDir: true,
+    manifest: false,
+    lib: false,
+    ssr: false,
+    ssrManifest: false,
+    ssrEmitAssets: false,
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 500,
+    watch: null,
+    commonjsOptions: { include: [Array], extensions: [Array] },
+    dynamicImportVarsOptions: { warnOnError: true, exclude: [Array] },
+    modulePreload: { polyfill: true },
+    cssMinify: true
+  },
+  resolve: {
+    mainFields: [ 'module', 'jsnext:main', 'jsnext' ],
+    browserField: true,
+    conditions: [],
+    extensions: [
+      '.mjs',  '.js',
+      '.mts',  '.ts',
+      '.jsx',  '.tsx',
+      '.json'
+    ],
+    dedupe: [ 'react', 'react-dom' ],
+    preserveSymlinks: false,
+    alias: [ [Object], [Object] ]
+  },
+  configFile: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/vite.config.ts',
+  configFileDependencies: [
+    '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/vite.config.ts'
+  ],
+  inlineConfig: {
+    root: undefined,
+    base: undefined,
+    mode: undefined,
+    configFile: undefined,
+    logLevel: undefined,
+    clearScreen: undefined,
+    optimizeDeps: { force: undefined },
+    build: {}
+  },
+  root: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1',
+  base: '/',
+  rawBase: '/',
+  publicDir: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/public',
+  cacheDir: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/.vite',
+  command: 'build',
+  mode: 'production',
+  ssr: {
+    format: 'esm',
+    target: 'node',
+    optimizeDeps: { disabled: true, esbuildOptions: [Object] }
+  },
+  isWorker: false,
+  mainConfig: null,
+  isProduction: true,
+  esbuild: { jsxDev: false },
+  server: {
+    preTransformRequests: true,
+    sourcemapIgnoreList: [Function: isInNodeModules],
+    middlewareMode: false,
+    fs: { strict: true, allow: [Array], deny: [Array] }
+  },
+  preview: {
+    port: undefined,
+    strictPort: undefined,
+    host: undefined,
+    https: undefined,
+    open: undefined,
+    proxy: undefined,
+    cors: undefined,
+    headers: undefined
+  },
+  envDir: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1',
+  env: { BASE_URL: '/', MODE: 'production', DEV: false, PROD: true },
+  assetsInclude: [Function: assetsInclude],
+  logger: {
+    hasWarned: false,
+    info: [Function: info],
+    warn: [Function: warn],
+    warnOnce: [Function: warnOnce],
+    error: [Function: error],
+    clearScreen: [Function: clearScreen],
+    hasErrorLogged: [Function: hasErrorLogged]
+  },
+  packageCache: Map(1) {
+    'fnpd_/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1' => {
+      dir: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1',
+      data: [Object],
+      hasSideEffects: [Function: hasSideEffects],
+      webResolvedImports: {},
+      nodeResolvedImports: {},
+      setResolvedCache: [Function: setResolvedCache],
+      getResolvedCache: [Function: getResolvedCache]
+    },
+    set: [Function (anonymous)]
+  },
+  createResolver: [Function: createResolver],
+  worker: {
+    format: 'iife',
+    plugins: [
+      'vite:build-metadata',
+      'vite:pre-alias',
+      'alias',
+      'vite:modulepreload-polyfill',
+      'vite:resolve',
+      'vite:html-inline-proxy',
+      'vite:css',
+      'vite:esbuild',
+      'vite:json',
+      'vite:wasm-helper',
+      'vite:worker',
+      'vite:asset',
+      'vite:wasm-fallback',
+      'vite:define',
+      'vite:css-post',
+      'vite:build-html',
+      'vite:worker-import-meta-url',
+      'vite:asset-import-meta-url',
+      'vite:force-systemjs-wrap-complete',
+      'vite:watch-package-data',
+      'commonjs',
+      'vite:data-uri',
+      'vite:dynamic-import-vars',
+      'vite:import-glob',
+      'vite:build-import-analysis',
+      'vite:esbuild-transpile',
+      'vite:terser',
+      'vite:load-fallback'
+    ],
+    rollupOptions: {},
+    getSortedPlugins: [Function: getSortedPlugins],
+    getSortedPluginHooks: [Function: getSortedPluginHooks]
+  },
+  appType: 'spa',
+  experimental: { importGlobRestoreExtension: false, hmrPartialAccept: false },
+  getSortedPlugins: [Function: getSortedPlugins],
+  getSortedPluginHooks: [Function: getSortedPluginHooks]
+}
+vite v4.3.0-beta.1 building for production...
+2023-03-30T16:07:25.244Z vite:esbuild 21.99ms tsconfck init /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1
+transforming...
+✓ 11565 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                     0.47 kB │ gzip:  0.31 kB
+dist/assets/favicon-17e50649.svg    1.52 kB │ gzip:  0.80 kB
+dist/assets/logo-ecc203fb.svg       2.67 kB │ gzip:  1.31 kB
+dist/assets/index-7bce8228.css      0.77 kB │ gzip:  0.49 kB
+dist/assets/index-a9d8ac84.js     247.41 kB │ gzip: 82.12 kB
+✓ built in 13.91s
