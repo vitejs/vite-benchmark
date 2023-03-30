@@ -1,3 +1,4 @@
+import AdmZip from 'adm-zip'
 import { execa } from 'execa'
 import { ensureDir, remove } from 'fs-extra'
 import { copyFile, writeFile } from 'fs/promises'
@@ -5,10 +6,9 @@ import path from 'path'
 import colors from 'picocolors'
 import stripAnsi from 'strip-ansi'
 
-import { RELEASE_DIR, CASE_DIR, DATA_DIR } from './constant'
+import { CASE_DIR, UPLOAD_DIR, UPLOAD_DIR_TEMP } from './constant'
 
 import type { ExecaChildProcess } from 'execa'
-
 interface MetricData {}
 
 type MetricKeys = 'devPrebundle' | 'build'
@@ -77,13 +77,13 @@ export class Benchmark {
       this.stopServer()
     }, 2 * 60 * 1000)
 
-    await this.upload('dev-prebundle-', 'release')
+    await this.prepareUpload('dev-prebundle-')
     await this.clean()
   }
 
   public async metricBuild() {
     await this.startBuild()
-    await this.upload('build-', 'release')
+    await this.prepareUpload('build-')
     await this.clean()
   }
 
@@ -172,21 +172,23 @@ export class Benchmark {
     })
   }
 
-  public async upload(prefix: string, type: 'release' | 'data') {
-    const dataDir = path.resolve(DATA_DIR, this.sha)
-    const releaseDir = path.resolve(RELEASE_DIR)
-    const target = type === 'release' ? releaseDir : dataDir
-
-    await ensureDir(target)
+  public async prepareUpload(prefix: string) {
+    await ensureDir(UPLOAD_DIR_TEMP)
     await writeFile(
-      path.resolve(target, `./${prefix}debug-log.txt`),
+      path.resolve(UPLOAD_DIR_TEMP, `./${prefix}debug-log.txt`),
       stripAnsi(this.debugLog)
     )
+
     await copyFile(
       path.resolve(this.caseDir, './CPU.cpuprofile'),
-      path.resolve(target, `./${prefix}CPU.cpuprofile`)
+      path.resolve(UPLOAD_DIR_TEMP, `./${prefix}CPU.cpuprofile`)
     )
 
-    console.log(colors.green(`Benchmark report saved to ${dataDir}`))
+    const zip = new AdmZip()
+    zip.addLocalFolder(UPLOAD_DIR_TEMP)
+    const zipDestPath = path.resolve(UPLOAD_DIR, 'benchmark.zip')
+    zip.writeZip(zipDestPath)
+
+    console.log(colors.green(`Benchmark report saved to ${zipDestPath}`))
   }
 }

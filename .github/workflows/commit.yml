@@ -47,7 +47,6 @@ jobs:
       vite_repo: ${{ needs.prepare_compare_benchmark.outputs.vite_repo }}
       vite_sha: ${{ needs.prepare_compare_benchmark.outputs.vite_sha }}
       upload_pages_data: false
-      upload_release: true
   post_call_workflow:
     needs: [prepare_compare_benchmark, call_benchmark_workflow]
     runs-on: ubuntu-latest
@@ -57,10 +56,10 @@ jobs:
         with:
           script: |
             const base = 'https://fi3ework.github.io/vite-benchmark/commit'
-            // release name should sync with ./benchmark.yml
+            // data name should sync with ./benchmark.yml
             const { vite_repo } = context.payload.inputs
-            const repoName = vite_repo.split('/').join('@')
+            const repoName = vite_repo
             const shortSha = '${{ needs.prepare_compare_benchmark.outputs.vite_sha }}'.slice(0, 7)
-            const releaseTag = `${repoName}@${shortSha}`
-            const link = `${base}?sha=${releaseTag}`
+            const dataPath = `${repoName}@${shortSha}`
+            const link = `${base}?sha=${encodeURIComponent(dataPath)}`
             core.info(`Benchmark report link: ${link}`)

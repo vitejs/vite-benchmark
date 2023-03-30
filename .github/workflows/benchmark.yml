@@ -17,11 +17,6 @@ on:
         required: true
         type: boolean
         default: false
-      upload_release:
-        description: 'should upload data as main branch'
-        required: true
-        type: boolean
-        default: false
 jobs:
   benchmark:
     name: Run benchmark
@@ -29,7 +24,6 @@ jobs:
       BENCHMARK_REPO: ${{ inputs.vite_repo }}
       BENCHMARK_REF: ${{ inputs.vite_sha }}
       UPLOAD_PAGES_DATA: ${{ inputs.upload_pages_data }}
-      UPLOAD_RELEASE: ${{ inputs.upload_release }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -60,23 +54,25 @@ jobs:
         run: pnpm run benchmark
 
       - uses: actions/github-script@v6
-        name: Calculate release name
-        id: calc_release_tag
+        name: Calculate data upload path
+        id: calc_upload_path
         with:
           script: |
             // can not use context.payload.inputs.vite_repo here as it's parent workflow's inputs
-            const repoName = '${{ inputs.vite_repo }}'.split('/').join('@')
+            const repoName = '${{ inputs.vite_repo }}'
             const shortSha = '${{ inputs.vite_sha }}'.slice(0, 7)
-            const releaseTag = `benchmark@${repoName}@${shortSha}`
-            // release name should sync with ./compare.yml
-            core.setOutput('release_tag', releaseTag)
+            const uploadPath = `./data/${repoName}/${shortSha}/`
+            // upload path should sync with ./compare.yml
+            core.setOutput('upload_path', uploadPath)
             core.setOutput('vite_short_sha', shortSha)
-      - uses: ncipollo/release-action@v1
-        name: Create release
+
+      - name: Upload data
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          artifacts: ./release/benchmark.zip
-          tag: ${{ steps.calc_release_tag.outputs.release_tag }}
-          commit: main
-          name: Benchmark of ${{ inputs.vite_repo }}@${{ steps.calc_release_tag.outputs.vite_short_sha }}
-          prerelease: true
-          allowUpdates: true
+          branch: gh-pages
+          folder: ./upload
+          target-folder: ${{ steps.calc_upload_path.outputs.upload_path }}
+          force: true
+          clean: true
+          git-config-name: 'github-actions[bot]'
+          git-config-email: 'github-actions[bot]@users.noreply.github.com'

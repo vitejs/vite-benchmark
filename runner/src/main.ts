@@ -13,12 +13,11 @@ import tar from 'tar'
 
 import { runBenchmarks } from './cases'
 import {
-  RELEASE_DIR,
   MAIN_BRANCH,
   PROJECT_DIR,
   REPO_NAME,
   REPO_OWNER,
-  DATA_DIR,
+  UPLOAD_DIR,
   VITE_DIR,
 } from './constant'
 
@@ -120,22 +119,13 @@ async function main() {
     path.resolve(PROJECT_DIR, './vite')
   )
 
-  await fsExtra.remove(DATA_DIR)
-  await fsExtra.remove(RELEASE_DIR)
+  await fsExtra.remove(UPLOAD_DIR)
 
   await runBenchmarks({
     viteRepo: process.env['BENCHMARK_REPO']!,
     viteRef: process.env['BENCHMARK_REF']!,
     uploadPagesData: process.env['UPLOAD_PAGES_DATA'] === 'true' ? true : false,
-    uploadRelease: process.env['UPLOAD_RELEASE'] === 'true' ? true : false,
   })
-
-  if (process.env['UPLOAD_RELEASE']) {
-    // should zip the release dir
-    const zip = new AdmZip()
-    zip.addLocalFolder(RELEASE_DIR)
-    zip.writeZip(path.resolve(RELEASE_DIR, 'benchmark.zip'))
-  }
 }
 
 main()

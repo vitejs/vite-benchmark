@@ -6,7 +6,6 @@ export async function runBenchmarks({
   viteRepo: string
   viteRef: string
   uploadPagesData: boolean
-  uploadRelease: boolean
 }) {
   await genPerf1(viteRef).run()
 }

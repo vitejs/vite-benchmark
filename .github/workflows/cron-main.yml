@@ -32,4 +32,3 @@ jobs:
       vite_repo: vitejs/vite
       vite_sha: ${{ needs.calc_inputs.outputs.vite_sha }}
       upload_pages_data: true
-      upload_release: true

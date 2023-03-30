@@ -70,7 +70,6 @@ jobs:
       vite_repo: ${{ needs.prepare_compare_benchmark.outputs.base_vite_repo }}
       vite_sha: ${{ needs.prepare_compare_benchmark.outputs.base_vite_sha }}
       upload_pages_data: false
-      upload_release: true
   call_to_benchmark_workflow:
     uses: ./.github/workflows/benchmark.yml
     secrets: inherit
@@ -79,7 +78,6 @@ jobs:
       vite_repo: ${{ needs.prepare_compare_benchmark.outputs.to_vite_repo }}
       vite_sha: ${{ needs.prepare_compare_benchmark.outputs.to_vite_sha }}
       upload_pages_data: false
-      upload_release: true
   post_call_workflow:
     needs:
       [
@@ -93,16 +91,16 @@ jobs:
         name: Report benchmark comparison link
         with:
           script: |
-            const base = 'https://fi3ework.github.io/vite-benchmark/compare'
-            // release name should sync with ./benchmark.yml
+            // upload path should sync with ./benchmark.yml
             const { base_vite_repo, to_vite_repo } = context.payload.inputs
-            const baseRepoName = base_vite_repo.split('/').join('__')
+            const baseRepoName = base_vite_repo
             const baseShortSha = '${{ needs.prepare_compare_benchmark.outputs.base_vite_sha }}'.slice(0, 7)
-            const baseReleaseTag = `${baseRepoName}__${baseShortSha}`
+            const baseDataPath = `${baseRepoName}@${baseShortSha}`
 
-            const toRepoName = to_vite_repo.split('/').join('__')
+            const toRepoName = to_vite_repo
             const toShortSha = '${{ needs.prepare_compare_benchmark.outputs.to_vite_sha }}'.slice(0, 7)
-            const toReleaseTag = `${toRepoName}__${toShortSha}`
+            const toDataPath = `${toRepoName}@${toShortSha}`
 
-            const link = `${base}?base=${baseReleaseTag}&to=${toReleaseTag}`
+            const base = 'https://fi3ework.github.io/vite-benchmark/compare'
+            const link = `${base}?base=${encodeURIComponent(baseDataPath)}&to=${encodeURIComponent(toDataPath)}`
             core.info(`Benchmark report link: ${link}`)
