@@ -109,3 +109,4 @@ dist
 /vite
 /website/src/token.ts
 /website/public/speedscope
+.DS_Store

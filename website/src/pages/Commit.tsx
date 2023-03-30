@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { downloadArtifacts, listArtifacts } from '../api/github'
 import { unzip, setOptions } from 'unzipit'
 import { Select } from 'antd'
+import { composeZipUrl } from '../api/github'
 
 const worker = new URL('unzipit/dist/unzipit-worker.module.js', import.meta.url)
 
 setOptions({
   useWorkers: true,
   workerURL: worker.href,
-  // workerURL: 'https://unpkg.com/unzipit@0.1.9/dist/unzipit-worker.module.js',
   numWorkers: 2,
 })
 
@@ -19,33 +18,15 @@ export const CommitPage = () => {
   const [currProfile, setCurrProfile] = useState<Profiles[number]>()
   let [searchParams, setSearchParams] = useSearchParams()
 
-  const composeArtifactName = useCallback((str: string) => {
-    const parsed = /(.*)\/(.*)@(.*)/.exec(str)
-    const [, owner, name, sha] = parsed!
-    return `benchmark@${owner}@${name}@${sha}`
+  const fetchZip = useCallback(async (url: string) => {
+    const result = await unzipArtifact(url)
+    setProfiles(result)
   }, [])
 
-  const artifactName = composeArtifactName(searchParams.get('sha')!) // like vitejs/vite@0f9ad68
-
-  const { data } = useQuery(
-    ['listArtifacts', artifactName],
-    () => listArtifacts(artifactName),
-    {
-      select: (data) => {
-        const artifact = data.artifacts.find((a) => a.name === artifactName)!
-        return artifact.id
-      },
-    }
-  )
-
-  useQuery(['downloadArtifacts', data], () => downloadArtifacts(data!), {
-    retry: false,
-    enabled: data !== undefined,
-    onSuccess: async (data) => {
-      const result = await unzipArtifact(data.url)
-      setProfiles(result)
-    },
-  })
+  useEffect(() => {
+    const artifactName = searchParams.get('sha')! // like vitejs/vite@0f9ad68
+    fetchZip(composeZipUrl(artifactName))
+  }, [])
 
   const handleChange = (value: any) => {
     setCurrProfile(profiles![value])
