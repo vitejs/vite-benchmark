@@ -1,4 +1,4 @@
-name: GitHub Pages(not data)
+name: Deploy Pages Website
 
 on:
   workflow_dispatch:
@@ -31,8 +31,7 @@ jobs:
         with:
           branch: gh-pages
           folder: ./website/dist
+          clean: true
+          clean-exclude: data/ # trailing slash is necessary
           git-config-name: 'github-actions[bot]'
           git-config-email: 'github-actions[bot]@users.noreply.github.com'
-          clean: true
-          clean-exclude: |
-            ./data
