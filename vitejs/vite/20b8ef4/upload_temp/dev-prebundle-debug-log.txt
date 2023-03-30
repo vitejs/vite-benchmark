@@ -1,0 +1,271 @@
+2023-03-30T16:22:52.267Z vite:config bundled config file loaded in 222.41ms
+2023-03-30T16:22:52.283Z vite:config using resolved config: {
+  plugins: [
+    'vite:pre-alias',
+    'alias',
+    'vite:react-babel',
+    'vite:react-refresh',
+    'vite:react-jsx',
+    'vite:modulepreload-polyfill',
+    'vite:optimized-deps',
+    'vite:resolve',
+    'vite:html-inline-proxy',
+    'vite:css',
+    'vite:esbuild',
+    'vite:json',
+    'vite:wasm-helper',
+    'vite:worker',
+    'vite:asset',
+    'vite:wasm-fallback',
+    'vite:define',
+    'vite:css-post',
+    'vite:worker-import-meta-url',
+    'vite:asset-import-meta-url',
+    'vite:dynamic-import-vars',
+    'vite:import-glob',
+    'vite:client-inject',
+    'vite:import-analysis'
+  ],
+  optimizeDeps: {
+    disabled: 'build',
+    force: true,
+    include: [ 'react/jsx-dev-runtime' ],
+    esbuildOptions: { preserveSymlinks: false }
+  },
+  server: {
+    preTransformRequests: true,
+    force: true,
+    sourcemapIgnoreList: [Function: isInNodeModules],
+    middlewareMode: false,
+    fs: { strict: true, allow: [Array], deny: [Array] }
+  },
+  resolve: {
+    mainFields: [ 'module', 'jsnext:main', 'jsnext' ],
+    browserField: true,
+    conditions: [],
+    extensions: [
+      '.mjs',  '.js',
+      '.mts',  '.ts',
+      '.jsx',  '.tsx',
+      '.json'
+    ],
+    dedupe: [ 'react', 'react-dom' ],
+    preserveSymlinks: false,
+    alias: [ [Object], [Object] ]
+  },
+  configFile: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/vite.config.ts',
+  configFileDependencies: [
+    '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/vite.config.ts'
+  ],
+  inlineConfig: {
+    root: undefined,
+    base: undefined,
+    mode: undefined,
+    configFile: undefined,
+    logLevel: undefined,
+    clearScreen: undefined,
+    optimizeDeps: { force: true },
+    server: { force: true }
+  },
+  root: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1',
+  base: '/',
+  rawBase: '/',
+  publicDir: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/public',
+  cacheDir: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/.vite',
+  command: 'serve',
+  mode: 'development',
+  ssr: {
+    format: 'esm',
+    target: 'node',
+    optimizeDeps: { disabled: true, esbuildOptions: [Object] }
+  },
+  isWorker: false,
+  mainConfig: null,
+  isProduction: false,
+  esbuild: { jsxDev: true },
+  build: {
+    target: [ 'es2020', 'edge88', 'firefox78', 'chrome87', 'safari14' ],
+    cssTarget: [ 'es2020', 'edge88', 'firefox78', 'chrome87', 'safari14' ],
+    outDir: 'dist',
+    assetsDir: 'assets',
+    assetsInlineLimit: 4096,
+    cssCodeSplit: true,
+    sourcemap: false,
+    rollupOptions: {},
+    minify: 'esbuild',
+    terserOptions: {},
+    write: true,
+    emptyOutDir: null,
+    copyPublicDir: true,
+    manifest: false,
+    lib: false,
+    ssr: false,
+    ssrManifest: false,
+    ssrEmitAssets: false,
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 500,
+    watch: null,
+    commonjsOptions: { include: [Array], extensions: [Array] },
+    dynamicImportVarsOptions: { warnOnError: true, exclude: [Array] },
+    modulePreload: { polyfill: true },
+    cssMinify: true
+  },
+  preview: {
+    port: undefined,
+    strictPort: undefined,
+    host: undefined,
+    https: undefined,
+    open: undefined,
+    proxy: undefined,
+    cors: undefined,
+    headers: undefined
+  },
+  envDir: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1',
+  env: { BASE_URL: '/', MODE: 'development', DEV: true, PROD: false },
+  assetsInclude: [Function: assetsInclude],
+  logger: {
+    hasWarned: false,
+    info: [Function: info],
+    warn: [Function: warn],
+    warnOnce: [Function: warnOnce],
+    error: [Function: error],
+    clearScreen: [Function: clearScreen],
+    hasErrorLogged: [Function: hasErrorLogged]
+  },
+  packageCache: Map(1) {
+    'fnpd_/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1' => {
+      dir: '/home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1',
+      data: [Object],
+      hasSideEffects: [Function: hasSideEffects],
+      webResolvedImports: {},
+      nodeResolvedImports: {},
+      setResolvedCache: [Function: setResolvedCache],
+      getResolvedCache: [Function: getResolvedCache]
+    }
+  },
+  createResolver: [Function: createResolver],
+  worker: {
+    format: 'iife',
+    plugins: [
+      'vite:pre-alias',
+      'alias',
+      'vite:modulepreload-polyfill',
+      'vite:optimized-deps',
+      'vite:resolve',
+      'vite:html-inline-proxy',
+      'vite:css',
+      'vite:esbuild',
+      'vite:json',
+      'vite:wasm-helper',
+      'vite:worker',
+      'vite:asset',
+      'vite:wasm-fallback',
+      'vite:define',
+      'vite:css-post',
+      'vite:worker-import-meta-url',
+      'vite:asset-import-meta-url',
+      'vite:dynamic-import-vars',
+      'vite:import-glob',
+      'vite:client-inject',
+      'vite:import-analysis'
+    ],
+    rollupOptions: {},
+    getSortedPlugins: [Function: getSortedPlugins],
+    getSortedPluginHooks: [Function: getSortedPluginHooks]
+  },
+  appType: 'spa',
+  experimental: { importGlobRestoreExtension: false, hmrPartialAccept: false },
+  getSortedPlugins: [Function: getSortedPlugins],
+  getSortedPluginHooks: [Function: getSortedPluginHooks]
+}
+2023-03-30T16:22:52.287Z vite:esbuild 11.74ms tsconfck init /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1
+2023-03-30T16:22:52.293Z vite:resolve 2.08ms react/jsx-dev-runtime -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react/jsx-dev-runtime.js
+2023-03-30T16:22:52.308Z vite:deps scanning for dependencies...
+2023-03-30T16:22:52.324Z vite:deps Crawling dependencies using entries: 
+  /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/index.html
+2023-03-30T16:22:52.342Z vite:resolve 0.34ms /src/main.tsx -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/src/main.tsx
+2023-03-30T16:22:52.348Z vite:resolve 0.95ms react -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react/index.js
+2023-03-30T16:22:52.350Z vite:resolve 0.46ms react-dom -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react-dom/index.js
+2023-03-30T16:22:52.351Z vite:resolve 0.35ms ./App -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/src/App.tsx
+2023-03-30T16:22:52.357Z vite:resolve 0.58ms @mui/material -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/material/index.js
+2023-03-30T16:22:52.358Z vite:resolve 0.47ms @mui/icons-material -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/icons-material/esm/index.js
+2023-03-30T16:22:52.359Z vite:resolve 0.43ms @mui/styles -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/styles/index.js
+2023-03-30T16:22:52.372Z vite:deps Scan completed in 63.46ms: 
+  @mui/icons-material -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/icons-material/esm/index.js
+  @mui/material -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/material/index.js
+  @mui/styles -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/styles/index.js
+  react -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react/index.js
+  react-dom -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react-dom/index.js
+2023-03-30T16:22:52.561Z vite:resolve 1.03ms @mui/utils -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/utils/esm/index.js
+2023-03-30T16:22:52.570Z vite:resolve 0.74ms object-assign -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/object-assign/index.js
+2023-03-30T16:22:52.587Z vite:resolve 0.50ms react -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react/index.js
+2023-03-30T16:22:52.601Z vite:resolve 1.25ms @babel/runtime/helpers/esm/extends -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@babel/runtime/helpers/esm/extends.js
+2023-03-30T16:22:52.614Z vite:resolve 1.67ms @mui/private-theming/ThemeProvider -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/private-theming/ThemeProvider/index.js
+2023-03-30T16:22:52.614Z vite:resolve 1.68ms @mui/private-theming/useTheme -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/private-theming/useTheme/index.js
+2023-03-30T16:22:52.658Z vite:resolve 0.76ms @mui/base/composeClasses -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/composeClasses/index.js
+2023-03-30T16:22:52.659Z vite:resolve 0.41ms react -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react/index.js
+2023-03-30T16:22:52.664Z vite:resolve 0.41ms jss-plugin-rule-value-function -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/jss-plugin-rule-value-function/dist/jss-plugin-rule-value-function.esm.js
+2023-03-30T16:22:52.665Z vite:resolve 0.65ms @babel/runtime/helpers/esm/objectWithoutPropertiesLoose -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
+2023-03-30T16:22:52.668Z vite:resolve 0.48ms prop-types -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/prop-types/index.js
+2023-03-30T16:22:52.669Z vite:resolve 0.65ms react-is -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react-is/index.js
+2023-03-30T16:22:52.703Z vite:resolve 4.53ms @mui/base/FocusTrap -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/FocusTrap/index.js
+2023-03-30T16:22:52.704Z vite:resolve 4.59ms jss-plugin-global -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/jss-plugin-global/dist/jss-plugin-global.esm.js
+2023-03-30T16:22:52.704Z vite:resolve 4.38ms react-is -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/prop-types/node_modules/react-is/index.js
+2023-03-30T16:22:52.704Z vite:resolve 4.38ms @mui/base/className -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/className/index.js
+2023-03-30T16:22:52.706Z vite:resolve 1.93ms @mui/base/ClickAwayListener -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/ClickAwayListener/index.js
+2023-03-30T16:22:52.707Z vite:resolve 1.96ms @mui/base/ModalUnstyled -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/ModalUnstyled/index.js
+2023-03-30T16:22:52.707Z vite:resolve 1.99ms @mui/base/NoSsr -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/NoSsr/index.js
+2023-03-30T16:22:52.707Z vite:resolve 2.04ms @mui/base/Portal -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/Portal/index.js
+2023-03-30T16:22:52.719Z vite:resolve 0.59ms @mui/base/TextareaAutosize -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/TextareaAutosize/index.js
+2023-03-30T16:22:52.720Z vite:resolve 1.25ms hoist-non-react-statics -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js
+2023-03-30T16:22:52.720Z vite:resolve 1.31ms jss-plugin-nested -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/jss-plugin-nested/dist/jss-plugin-nested.esm.js
+2023-03-30T16:22:52.720Z vite:resolve 1.33ms jss -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/jss/dist/jss.esm.js
+2023-03-30T16:22:52.721Z vite:resolve 0.37ms scheduler -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/scheduler/index.js
+2023-03-30T16:22:52.727Z vite:resolve 2.64ms scheduler/tracing -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/scheduler/tracing.js
+2023-03-30T16:22:52.728Z vite:resolve 2.68ms jss-plugin-camel-case -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/jss-plugin-camel-case/dist/jss-plugin-camel-case.esm.js
+2023-03-30T16:22:52.728Z vite:resolve 2.79ms clsx -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/clsx/dist/clsx.m.js
+2023-03-30T16:22:52.742Z vite:resolve 0.52ms jss-plugin-default-unit -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/jss-plugin-default-unit/dist/jss-plugin-default-unit.esm.js
+2023-03-30T16:22:52.744Z vite:resolve 0.47ms jss-plugin-vendor-prefixer -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/jss-plugin-vendor-prefixer/dist/jss-plugin-vendor-prefixer.esm.js
+2023-03-30T16:22:52.745Z vite:resolve 0.48ms jss-plugin-props-sort -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/jss-plugin-props-sort/dist/jss-plugin-props-sort.esm.js
+2023-03-30T16:22:52.750Z vite:resolve 1.92ms tiny-warning -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/tiny-warning/dist/tiny-warning.esm.js
+2023-03-30T16:22:52.750Z vite:resolve 1.94ms hyphenate-style-name -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/hyphenate-style-name/index.js
+2023-03-30T16:22:52.750Z vite:resolve 1.95ms css-vendor -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/css-vendor/dist/css-vendor.esm.js
+2023-03-30T16:22:52.751Z vite:resolve 0.19ms react/jsx-runtime -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react/jsx-runtime.js
+2023-03-30T16:22:52.771Z vite:resolve 5.72ms react-is -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/hoist-non-react-statics/node_modules/react-is/index.js
+2023-03-30T16:22:52.771Z vite:resolve 5.61ms @mui/system -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/system/esm/index.js
+2023-03-30T16:22:52.862Z vite:resolve 19.66ms is-in-browser -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/is-in-browser/dist/module.js
+2023-03-30T16:22:52.865Z vite:resolve 1.95ms @mui/base/useAutocomplete -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/useAutocomplete/index.js
+2023-03-30T16:22:52.913Z vite:resolve 1.22ms react-dom -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react-dom/index.js
+2023-03-30T16:22:52.916Z vite:resolve 1.40ms @babel/runtime/helpers/esm/toConsumableArray -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
+2023-03-30T16:22:52.916Z vite:resolve 1.49ms @mui/base/PopperUnstyled -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/PopperUnstyled/index.js
+2023-03-30T16:22:52.957Z vite:resolve 9.90ms @mui/base -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/index.js
+2023-03-30T16:22:52.957Z vite:resolve 9.96ms @babel/runtime/helpers/esm/createClass -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@babel/runtime/helpers/esm/createClass.js
+2023-03-30T16:22:52.991Z vite:resolve 2.82ms @babel/runtime/helpers/esm/inheritsLoose -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@babel/runtime/helpers/esm/inheritsLoose.js
+2023-03-30T16:22:52.991Z vite:resolve 2.91ms @mui/system/Unstable_Grid -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/system/esm/Unstable_Grid/index.js
+2023-03-30T16:22:52.991Z vite:resolve 3.02ms @mui/styled-engine -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/styled-engine/index.js
+2023-03-30T16:22:53.008Z vite:resolve 5.14ms react-transition-group -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/react-transition-group/esm/index.js
+2023-03-30T16:22:53.021Z vite:resolve 5.56ms @babel/runtime/helpers/esm/assertThisInitialized -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
+2023-03-30T16:22:53.021Z vite:resolve 5.49ms @emotion/styled -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/styled/dist/emotion-styled.browser.esm.js
+2023-03-30T16:22:53.022Z vite:resolve 5.68ms @mui/private-theming -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/private-theming/index.js
+2023-03-30T16:22:53.066Z vite:resolve 3.01ms @emotion/react -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/react/dist/emotion-react.browser.esm.js
+2023-03-30T16:22:53.081Z vite:resolve 10.40ms @mui/base/useSnackbar -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/useSnackbar/index.js
+2023-03-30T16:22:53.081Z vite:resolve 10.60ms @mui/base/useSlider -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/useSlider/index.js
+2023-03-30T16:22:53.107Z vite:resolve 9.48ms @mui/base/utils -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/utils/index.js
+2023-03-30T16:22:53.108Z vite:resolve 8.13ms @babel/runtime/helpers/extends -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@babel/runtime/helpers/esm/extends.js
+2023-03-30T16:22:53.128Z vite:resolve 0.58ms @emotion/cache -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/cache/dist/emotion-cache.browser.esm.js
+2023-03-30T16:22:53.136Z vite:resolve 1.97ms @mui/base/useBadge -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/base/useBadge/index.js
+2023-03-30T16:22:53.155Z vite:resolve 0.99ms @emotion/is-prop-valid -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/is-prop-valid/dist/emotion-is-prop-valid.esm.js
+2023-03-30T16:22:53.201Z vite:resolve 15.84ms @emotion/sheet -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/sheet/dist/emotion-sheet.browser.esm.js
+2023-03-30T16:22:53.209Z vite:resolve 23.33ms @emotion/weak-memoize -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/weak-memoize/dist/emotion-weak-memoize.esm.js
+2023-03-30T16:22:53.469Z vite:resolve 4.35ms @emotion/utils -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/utils/dist/emotion-utils.browser.esm.js
+2023-03-30T16:22:53.469Z vite:resolve 4.29ms stylis -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/stylis/index.js
+2023-03-30T16:22:53.502Z vite:resolve 10.22ms @popperjs/core -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@popperjs/core/lib/index.js
+2023-03-30T16:22:53.503Z vite:resolve 11.41ms dom-helpers/addClass -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/dom-helpers/esm/addClass.js
+2023-03-30T16:22:54.346Z vite:resolve 3.87ms @emotion/serialize -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/serialize/dist/emotion-serialize.browser.esm.js
+2023-03-30T16:22:54.346Z vite:resolve 4.71ms dom-helpers/removeClass -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/dom-helpers/esm/removeClass.js
+2023-03-30T16:22:55.146Z vite:resolve 4.58ms @mui/material/utils -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@mui/material/utils/index.js
+2023-03-30T16:22:55.154Z vite:resolve 3.37ms @emotion/use-insertion-effect-with-fallbacks -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/use-insertion-effect-with-fallbacks/dist/emotion-use-insertion-effect-with-fallbacks.browser.esm.js
+2023-03-30T16:22:55.154Z vite:resolve 3.48ms @emotion/memoize -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/memoize/dist/emotion-memoize.esm.js
+2023-03-30T16:22:55.163Z vite:resolve 0.40ms @emotion/hash -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/hash/dist/emotion-hash.esm.js
+2023-03-30T16:22:55.163Z vite:resolve 0.26ms @emotion/unitless -> /home/runner/work/vite-benchmark/vite-benchmark/cases/perf-1/node_modules/@emotion/unitless/dist/emotion-unitless.esm.js
+2023-03-30T16:22:56.488Z vite:deps Dependencies bundled in 4114.23ms
