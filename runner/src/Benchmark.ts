@@ -14,6 +14,13 @@ interface MetricData {}
 type MetricKeys = 'devPrebundle' | 'build'
 type Metric = boolean | MetricData
 
+const nodeArgs = [
+  '--no-turbo-inlining',
+  '--cpu-prof',
+  '--cpu-prof-interval',
+  '100',
+] as const
+
 export class Benchmark {
   public name!: string
   public caseDir!: string
@@ -98,7 +105,7 @@ export class Benchmark {
     const buildProcess = execa(
       'node',
       [
-        '--cpu-prof',
+        ...nodeArgs,
         '--cpu-prof-name=CPU.cpuprofile',
         './node_modules/vite/bin/vite.js',
         'build',
@@ -129,7 +136,7 @@ export class Benchmark {
     this.serveChild = execa(
       'node',
       [
-        '--cpu-prof',
+        ...nodeArgs,
         '--cpu-prof-name=CPU.cpuprofile',
         './node_modules/vite/bin/vite.js',
         'dev',
