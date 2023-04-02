@@ -11,7 +11,7 @@ import { Octokit } from 'octokit'
 import colors from 'picocolors'
 import tar from 'tar'
 
-import { PROJECT_DIR, VITE_DIR } from './constant'
+import { VITE_DIR } from './constant'
 
 const octokit = new Octokit({})
 
