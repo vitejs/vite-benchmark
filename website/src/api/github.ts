@@ -1,11 +1,7 @@
+import { CompareItem } from '../types'
+
 export function composeZipUrl(path: string) {
   return `https://fi3ework.github.io/vite-benchmark/data/${path}/benchmark.zip`
-}
-
-export interface CompareItem {
-  owner: string
-  repo: string
-  sha: string
 }
 
 function composeCompareItemKey(compare: CompareItem) {

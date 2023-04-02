@@ -1,9 +1,12 @@
-import { Select, Space, Spin } from 'antd'
+import { Button, Select, Spin } from 'antd'
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { setOptions, unzip } from 'unzipit'
 
-import { CompareItem, composeCompareZipUrl } from '../api/github'
+import { composeCompareZipUrl } from '../api/github'
+import { Overview } from './Overview'
+
+import type { Suite, CompareItem, SuiteKeys } from '../types'
 
 const worker = new URL('unzipit/dist/unzipit-worker.module.js', import.meta.url)
 
@@ -23,9 +26,9 @@ const parseCompares = (compares: string) => {
 }
 
 export const ComparePage = () => {
-  const [profiles, setProfiles] = useState<Profiles[]>()
-  const [currProfileKey, setCurrProfileKey] = useState<string>()
-  const [shaIndex, setCompareIndex] = useState<number>(0)
+  const [suites, setSuites] = useState<Suite[]>()
+  const [currSuiteKey, setSuiteKey] = useState<SuiteKeys>()
+  const [compareIndex, setCompareIndex] = useState<number>()
   const [compares, setCompares] = useState<CompareItem[]>()
   let [searchParams] = useSearchParams()
 
@@ -44,22 +47,26 @@ export const ComparePage = () => {
         })
       )
 
-      setProfiles(res)
+      setSuites(res)
     }
 
     fn()
   }, [])
 
-  const handleChange = (value: string) => {
-    setCurrProfileKey(value)
+  const handleChange = (value: SuiteKeys) => {
+    setSuiteKey(value)
   }
 
   const handleCompareIndex = (value: number) => {
     setCompareIndex(value)
-    // setCurrProfile(profiles![shaIndex]![value])
   }
 
-  if (!profiles) {
+  const showOverView = () => {
+    setCompareIndex(undefined)
+    setSuiteKey(undefined)
+  }
+
+  if (!suites || !compares) {
     return (
       <div className="h-screen w-screen flex items-center justify-center">
         <div className="font-mono text-3xl">
@@ -70,64 +77,83 @@ export const ComparePage = () => {
     )
   }
 
-  const currProfile = profiles[shaIndex][currProfileKey!]
+  const currSuite = compareIndex !== undefined ? suites?.[compareIndex] : null
+  const currPayload =
+    compareIndex !== undefined && currSuiteKey !== undefined
+      ? suites?.[compareIndex]?.[currSuiteKey]
+      : null
+
+  const showOverview = !currPayload
 
   return (
     <div>
-      <Select
-        placeholder="Select a sha"
-        style={{ width: 200, margin: '20px 10px' }}
-        onChange={handleCompareIndex}
-        options={(compares || []).map((c, index) => {
-          return {
-            label: (
-              <span className="font-mono">
-                {c.sha} ({index === 0 ? 'base' : 'to'})
-              </span>
-            ),
-            value: index,
-          }
-        })}
-      />
-      <Select
-        placeholder="Select a profile"
-        style={{ width: 500, margin: '20px 10px' }}
-        onChange={handleChange}
-        options={Object.keys(profiles[shaIndex]).map((name) => ({
-          label: <span className="font-mono">{name}</span>,
-          value: name,
-        }))}
-      />
-      {currProfile?.type === 'cpuprofile' && (
-        <iframe
-          frameBorder={0}
-          key={currProfile.payload}
-          style={{ width: '100vw', height: 'calc(100vh - 100px)' }}
-          src={`/vite-benchmark/speedscope/index.html#profileURL=${encodeURIComponent(
-            currProfile.payload
-          )}&title=${currProfile.name}`}
+      <div className="ml-8 mt-8 mb-4 space-x-2">
+        <Button type="default" onClick={showOverView}>
+          Overview
+        </Button>
+        <Select
+          value={compareIndex}
+          allowClear
+          placeholder="Select a sha"
+          style={{ width: 200 }}
+          onChange={handleCompareIndex}
+          options={(compares || []).map((c, index) => {
+            return {
+              label: (
+                <span className="font-mono">
+                  {c.sha}({index === 0 ? 'base' : 'to'})
+                </span>
+              ),
+              value: index,
+            }
+          })}
         />
-      )}
-      {currProfile?.type === 'txt' && (
-        <pre>
-          <code>{currProfile.payload}</code>
-        </pre>
+        {currSuite && (
+          <Select
+            value={currSuiteKey}
+            allowClear
+            placeholder="Select a suite"
+            style={{ width: 500 }}
+            onChange={handleChange}
+            options={Object.keys(currSuite).map((name) => ({
+              label: <span className="font-mono">{name}</span>,
+              value: name,
+            }))}
+          />
+        )}
+      </div>
+      {showOverview ? (
+        <Overview compares={compares} suites={suites!} />
+      ) : (
+        <>
+          {currPayload?.type === 'cpuprofile' && (
+            <iframe
+              frameBorder={0}
+              key={currPayload.payload}
+              style={{ width: '100vw', height: 'calc(100vh - 100px)' }}
+              src={`/vite-benchmark/speedscope/index.html#profileURL=${encodeURIComponent(
+                currPayload.payload
+              )}&title=${currPayload.name}`}
+            />
+          )}
+          {currPayload?.type === 'txt' && (
+            <pre>
+              <code>{currPayload.payload}</code>
+            </pre>
+          )}
+        </>
       )}
     </div>
   )
 }
 
-type Profiles = Record<
-  string,
-  { name: string; payload: string; type: 'txt' | 'cpuprofile' }
->
-
 const unzipArtifact = async (url: string) => {
   const { entries } = await unzip(url)
-  const result: Profiles = {}
+  const result: Partial<Suite> = {}
   const pms = Object.entries(entries).map(async ([name, entry]) => {
     if (name.endsWith('.txt')) {
       const text = await entry.text()
+      // @ts-ignore
       result[name] = {
         name,
         type: 'txt',
@@ -138,6 +164,7 @@ const unzipArtifact = async (url: string) => {
     if (name.endsWith('.cpuprofile')) {
       const blob = await entry.blob('application/json')
       const ObjectUrl = window.URL.createObjectURL(blob)
+      // @ts-ignore
       result[name] = {
         name,
         type: 'cpuprofile',
@@ -147,5 +174,5 @@ const unzipArtifact = async (url: string) => {
   })
 
   await Promise.all(pms)
-  return result
+  return result as Suite
 }

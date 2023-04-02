@@ -21,6 +21,7 @@ export default defineConfig({
       input: {
         main: path.resolve(__dirname, 'index.html'),
         commit: path.resolve(__dirname, './commit/index.html'),
+        compare: path.resolve(__dirname, './compare/index.html'),
       },
     },
   },
