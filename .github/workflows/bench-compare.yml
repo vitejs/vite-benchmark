@@ -1,0 +1,60 @@
+name: Benchmark Compare
+on:
+  workflow_call:
+    inputs:
+      to_compares:
+        description: repositories to compare with, ex. "vitejs/vite@main,vitejs/vitepress@1f011d8"
+        required: true
+        type: string
+jobs:
+  benchmark:
+    name: Run benchmark
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: cd runner && pnpm install
+
+      - name: Run benchmark
+        run: pnpm tsx src/cli.ts bench --compares ${{ inputs.to_compares }}
+
+      - uses: actions/github-script@v6
+        name: Calculate data upload path
+        id: calc_upload_path
+        with:
+          script: |
+            // can not use context.payload.inputs.vite_repo here as it's parent workflow's inputs
+            const toCompares = '${{ inputs.to_compares }}'
+            const toCompareRepos = toCompares.split(',').map((repo) => repo.trim().split('@'))
+
+            const promises = toCompareRepos.map(([repoName, ref]) => github.rest.git.getRef({
+              owner: repoName.split('/')[0],
+              repo: repoName.split('/')[1],
+              ref: ref,
+            }))
+
+            const data = await Promise.all(promises)
+
+
+            core.setOutput('to_compares_with_sha', shortSha)
+      - name: Upload data
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: ./upload
+          target-folder: ${{ steps.calc_upload_path.outputs.upload_path }}
+          force: true
+          clean: true
+          git-config-name: 'github-actions[bot]'
+          git-config-email: 'github-actions[bot]@users.noreply.github.com'

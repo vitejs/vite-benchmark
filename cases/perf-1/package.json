@@ -22,6 +22,6 @@
     "@vitejs/plugin-react": "^1.1.0",
     "serve": "^13.0.2",
     "typescript": "^4.5.2",
-    "vite": "file:../../vite"
+    "vite": "file:../vite"
   }
 }

@@ -23,7 +23,7 @@ import {
 
 const octokit = new Octokit({})
 
-async function cloneVite() {
+export async function cloneVite() {
   // https://docs.github.com/en/actions/learn-github-actions/variables
   const runnerTempDir = process.env['RUNNER_TEMP'] || os.tmpdir()
 

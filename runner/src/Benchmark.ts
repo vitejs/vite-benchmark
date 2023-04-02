@@ -6,7 +6,7 @@ import path from 'path'
 import colors from 'picocolors'
 import stripAnsi from 'strip-ansi'
 
-import { CASE_DIR, UPLOAD_DIR, UPLOAD_DIR_TEMP } from './constant'
+import { CASE_TEMP_DIR, UPLOAD_DIR, UPLOAD_DIR_TEMP } from './constant'
 
 import type { ExecaChildProcess } from 'execa'
 interface MetricData {}
@@ -24,38 +24,35 @@ const nodeArgs = [
 export class Benchmark {
   public name!: string
   public caseDir!: string
-  public viteCache: string
   public dist: string
   public metrics: Partial<Record<MetricKeys, Metric>> = {}
   public debugLog = ''
   public serveChild?: ExecaChildProcess<string>
-  public sha!: string
+  public uniqueKey: string
 
   constructor(options: {
-    sha: string
+    uniqueKey: string
     name: string
     metrics: Partial<Record<MetricKeys, Metric>>
-    viteCache?: string
     dist?: string
   }) {
-    this.sha = options.sha
+    this.uniqueKey = options.uniqueKey
     this.name = options.name
     this.metrics = options.metrics
-    this.viteCache = path.resolve(options.viteCache ?? './node_modules/.vite')
     this.dist = path.resolve(options.dist ?? './dist')
-    this.caseDir = path.resolve(CASE_DIR, this.name)
+    this.caseDir = path.resolve(CASE_TEMP_DIR, this.name)
   }
 
-  public async installDeps() {
-    // https://github.com/npm/cli/issues/2339
-    await execa('npm', ['i', '--install-links', '--no-save'], {
-      cwd: this.caseDir,
-      stdio: 'inherit',
-    })
-  }
+  // public async installDeps() {
+  //   // https://github.com/npm/cli/issues/2339
+  //   await execa('pnpm', ['i', ], {
+  //     cwd: this.caseDir,
+  //     stdio: 'inherit',
+  //   })
+  // }
 
   public async run() {
-    await this.installDeps()
+    // await this.installDeps()
     console.log(colors.green(`Start running benchmark script`))
     for (const [key, value] of Object.entries(this.metrics)) {
       console.log(colors.green(`Start running benchmark ${key}`))
@@ -64,25 +61,31 @@ export class Benchmark {
           await this.metricDevPrebundle()
           break
         case 'build':
-          await this.metricBuild()
+          // await this.metricBuild()
           break
         default:
           break
       }
       console.log(colors.green(`Finish running benchmark ${key}`))
     }
+
+    this.packUpload()
   }
 
   public async metricDevPrebundle() {
-    await this.startServer({
-      onDepsBundled: () => this.stopServer(),
-    })
-
-    setTimeout(() => {
+    const timeoutHandler = setTimeout(() => {
       if (this.serveChild?.killed) return
       console.log(colors.red(`Timeout for dev-prebundle`))
+      console.log(this.serveChild?.killed)
       this.stopServer()
-    }, 2 * 60 * 1000)
+    }, 60 * 1000)
+
+    await this.startServer({
+      onDepsBundled: () => {
+        this.stopServer()
+        clearTimeout(timeoutHandler)
+      },
+    })
 
     await this.prepareUpload('dev-prebundle-')
     await this.clean()
@@ -138,7 +141,7 @@ export class Benchmark {
       [
         ...nodeArgs,
         '--cpu-prof-name=CPU.cpuprofile',
-        './node_modules/vite/bin/vite.js',
+        '../node_modules/.pnpm/file+vite/node_modules/vite/bin/vite.js',
         'dev',
         '--debug',
         '--force',
@@ -161,12 +164,13 @@ export class Benchmark {
         data.toString().includes('deps bundled in') ||
         data.toString().includes('Dependencies bundled in')
       ) {
-        console.log(colors.cyan(`Server stopped`))
+        console.log(colors.cyan(`Dev server stopped`))
         onDepsBundled?.()
       }
     })
 
     this.serveChild.on('exit', () => {
+      console.log('🥰', 1)
       resolveServer(1)
     })
 
@@ -177,6 +181,7 @@ export class Benchmark {
     this.serveChild?.kill('SIGTERM', {
       forceKillAfterTimeout: 2000,
     })
+    console.log('🧵', this.serveChild?.killed)
   }
 
   public async prepareUpload(prefix: string) {
@@ -190,12 +195,13 @@ export class Benchmark {
       path.resolve(this.caseDir, './CPU.cpuprofile'),
       path.resolve(UPLOAD_DIR_TEMP, `./${prefix}CPU.cpuprofile`)
     )
+  }
 
+  public packUpload() {
     const zip = new AdmZip()
     zip.addLocalFolder(UPLOAD_DIR_TEMP)
-    const zipDestPath = path.resolve(UPLOAD_DIR, 'benchmark.zip')
+    const zipDestPath = path.resolve(UPLOAD_DIR, `${this.uniqueKey}.zip`)
     zip.writeZip(zipDestPath)
-
     console.log(colors.green(`Benchmark report saved to ${zipDestPath}`))
   }
 }

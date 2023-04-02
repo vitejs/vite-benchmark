@@ -106,6 +106,8 @@ dist
 # vite-benchmark
 *.cpuprofile
 /upload
+/upload-temp
+/cases-temp
 /vite
 /website/src/token.ts
 /website/public/speedscope
