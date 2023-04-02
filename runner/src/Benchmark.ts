@@ -54,6 +54,7 @@ export class Benchmark {
   public async run() {
     // await this.installDeps()
     console.log(colors.green(`Start running benchmark script`))
+    await remove(UPLOAD_DIR_TEMP)
     for (const [key, value] of Object.entries(this.metrics)) {
       console.log(colors.green(`Start running benchmark ${key}`))
       switch (key as MetricKeys) {
@@ -61,7 +62,7 @@ export class Benchmark {
           await this.metricDevPrebundle()
           break
         case 'build':
-          // await this.metricBuild()
+          await this.metricBuild()
           break
         default:
           break
@@ -170,7 +171,6 @@ export class Benchmark {
     })
 
     this.serveChild.on('exit', () => {
-      console.log('🥰', 1)
       resolveServer(1)
     })
 
@@ -181,7 +181,6 @@ export class Benchmark {
     this.serveChild?.kill('SIGTERM', {
       forceKillAfterTimeout: 2000,
     })
-    console.log('🧵', this.serveChild?.killed)
   }
 
   public async prepareUpload(prefix: string) {

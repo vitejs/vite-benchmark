@@ -15,14 +15,14 @@ export async function runBenchmarks({
   console.log(
     colors.cyan(`Running benchmarks of ${decodeURIComponent(uniqueKey)}`)
   )
-  // await fsExtra.remove(CASE_TEMP_DIR)
-  // await fsExtra.copy(CASE_DIR, CASE_TEMP_DIR)
-  // await fsExtra.copy(viteDistDir, path.resolve(CASE_TEMP_DIR, './vite'))
+  await fsExtra.remove(CASE_TEMP_DIR)
+  await fsExtra.copy(CASE_DIR, CASE_TEMP_DIR)
+  await fsExtra.copy(viteDistDir, path.resolve(CASE_TEMP_DIR, './vite'))
 
-  // await execa('pnpm', ['i'], {
-  //   cwd: CASE_TEMP_DIR,
-  //   stdio: 'inherit',
-  // })
+  await execa('pnpm', ['i'], {
+    cwd: CASE_TEMP_DIR,
+    stdio: 'inherit',
+  })
 
   await perf1Bench({ uniqueKey }).run()
 }

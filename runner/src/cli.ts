@@ -1,15 +1,18 @@
 import { cac } from 'cac'
+import fs from 'node:fs'
+import os from 'node:os'
 
-import { buildVite, cloneVite, parseCompare } from './utils'
-import { VITE_DIR } from './constant'
 import { runBenchmarks } from './cases'
+import { VITE_DIR } from './constant'
+import { buildVite, cloneVite, parseCompare } from './utils'
 
 const cli = cac()
+const isGitHubActions = !!process.env['GITHUB_ACTIONS']
 
 cli
   .command('bench', 'run full benchmark process')
   .option('--compares <compares>', 'vite refs to compare')
-  .option('--clone', 'should clone vite repositories')
+  .option('--skip-clone [skipClone]', 'should skip clone vite repositories')
   .option('--temp-dir [tempDir]', 'where to clone vite repositories')
   .option(
     '--vite-dirs [viteDirs]',
@@ -22,7 +25,7 @@ cli
   .action(async (options) => {
     const repos = await parseCompare(options.compares)
     let viteTempDirs: string[] = []
-    if (options.clone && !options.viteDirs) {
+    if (!options.skipClone && !options.viteDirs) {
       viteTempDirs = await Promise.all(
         repos.map((r) =>
           cloneVite({
@@ -49,7 +52,7 @@ cli
 
     const viteDistDirs = repos.map((r) => `${VITE_DIR}/${r.uniqueKey}/package`)
 
-    for (let i = 0; i < repos.length - 1; i++) {
+    for (let i = 0; i < repos.length; i++) {
       const viteDistDir = viteDistDirs[i]!
       await runBenchmarks({
         viteDistDir,
@@ -58,6 +61,14 @@ cli
     }
 
     const compareUniqueKey = repos.map((r) => r.uniqueKey).join('...')
+
+    if (isGitHubActions) {
+      const output = process.env['GITHUB_OUTPUT']
+      fs.appendFileSync(
+        output!,
+        `compare_unique_key=./data/${compareUniqueKey}${os.EOL}`
+      )
+    }
   })
 
 cli.help()

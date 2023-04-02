@@ -109,7 +109,6 @@ export async function buildVite({
 }) {
   const $$ = $({ stdio: 'inherit', cwd: viteProjectPath })
   await $$`node -v`
-  await $$`corepack enable`
   await $$`pnpm i`
 
   console.log(colors.cyan(`Start run 'pnpm build' for Vite`))
