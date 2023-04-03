@@ -15,15 +15,15 @@ import { VITE_DIR } from './constant'
 
 const octokit = new Octokit({})
 
-export async function parseCompare(compare: string): Promise<
-  {
-    owner: string
-    repo: string
-    sha: string
-    ref: string | null
-    uniqueKey: string
-  }[]
-> {
+interface Compare {
+  owner: string
+  repo: string
+  sha: string
+  ref: string | null
+  uniqueKey: string
+}
+
+export async function parseCompare(compare: string): Promise<Compare[]> {
   const repoPromises = compare
     .split(',')
     .map((repo) => repo.trim())
@@ -145,4 +145,12 @@ export async function buildVite({
 
   const viteDistDir = path.resolve(uniquePath, 'package')
   return viteDistDir
+}
+
+export function composeCompareUrl(compares: Compare[]): string {
+  // ex. https://fi3ework.github.io/vite-benchmark/compare/?compares=vitejs%2Fvite%401f011d8...vitejs%2Fvite%40c268cfa
+  const base = 'https://fi3ework.github.io/vite-benchmark/compare'
+  const compareQuery = compares.map((c) => c.uniqueKey).join('...')
+
+  return `${base}/?compares=${compareQuery}`
 }

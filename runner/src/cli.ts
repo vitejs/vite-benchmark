@@ -1,10 +1,8 @@
 import { cac } from 'cac'
-import fs from 'node:fs'
-import os from 'node:os'
 
 import { runBenchmarks } from './cases'
 import { VITE_DIR } from './constant'
-import { buildVite, cloneVite, parseCompare } from './utils'
+import { buildVite, cloneVite, composeCompareUrl, parseCompare } from './utils'
 
 const cli = cac()
 const isGitHubActions = !!process.env['GITHUB_ACTIONS']
@@ -23,15 +21,15 @@ cli
     'skip build Vite projects matched with compares arg'
   )
   .action(async (options) => {
-    const repos = await parseCompare(options.compares)
+    const compares = await parseCompare(options.compares)
     let viteTempDirs: string[] = []
     if (!options.skipClone && !options.viteDirs) {
       viteTempDirs = await Promise.all(
-        repos.map((r) =>
+        compares.map((c) =>
           cloneVite({
-            owner: r.owner,
-            repo: r.repo,
-            sha: r.sha,
+            owner: c.owner,
+            repo: c.repo,
+            sha: c.sha,
           })
         )
       )
@@ -44,30 +42,33 @@ cli
         viteTempDirs.map((path, index) =>
           buildVite({
             viteProjectPath: path,
-            uniqueKey: repos[index]!.uniqueKey,
+            uniqueKey: compares[index]!.uniqueKey,
           })
         )
       )
     }
 
-    const viteDistDirs = repos.map((r) => `${VITE_DIR}/${r.uniqueKey}/package`)
+    const viteDistDirs = compares.map(
+      (r) => `${VITE_DIR}/${r.uniqueKey}/package`
+    )
 
-    for (let i = 0; i < repos.length; i++) {
+    for (let i = 0; i < compares.length; i++) {
       const viteDistDir = viteDistDirs[i]!
       await runBenchmarks({
         viteDistDir,
-        uniqueKey: repos[i]!.uniqueKey,
+        uniqueKey: compares[i]!.uniqueKey,
       })
     }
 
-    const compareUniqueKey = repos.map((r) => r.uniqueKey).join('...')
+    const compareUniqueKey = compares.map((c) => c.uniqueKey).join('...')
 
     if (isGitHubActions) {
-      const output = process.env['GITHUB_OUTPUT']
-      fs.appendFileSync(
-        output!,
-        `compare_unique_key=./data/${compareUniqueKey}${os.EOL}`
-      )
+      const core = await import('@actions/core')
+      core.setOutput('compare_unique_key', `./data/${compareUniqueKey}`)
+      const compareUrl = composeCompareUrl(compares)
+      core.summary.addHeading('Benchmark Done')
+      core.summary.addLink('View link', compareUrl)
+      await core.summary.write()
     }
   })
 
