@@ -137,7 +137,7 @@ export const ComparePage = () => {
             />
           )}
           {currPayload?.type === 'txt' && (
-            <pre className="m-8 p-3 text-xs border rounded-md border-green-400 bg-black">
+            <pre className="m-8 p-3 text-xs border rounded-md border-green-400 bg-black overflow-auto">
               <code>{currPayload.payload}</code>
             </pre>
           )}

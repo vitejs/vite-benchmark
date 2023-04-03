@@ -18,11 +18,9 @@ const queryClient = new QueryClient({
 })
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ConfigProvider theme={{ algorithm: antdTheme.darkAlgorithm }}>
-        <RouterProvider router={Router} />
-      </ConfigProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <ConfigProvider theme={{ algorithm: antdTheme.darkAlgorithm }}>
+      <RouterProvider router={Router} />
+    </ConfigProvider>
+  </QueryClientProvider>
 )

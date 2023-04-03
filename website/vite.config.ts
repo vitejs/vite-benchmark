@@ -1,5 +1,4 @@
 import path from 'node:path'
-import fs from 'node:fs'
 import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 import basicSsl from '@vitejs/plugin-basic-ssl'
@@ -19,8 +18,6 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'index.html'),
-        commit: path.resolve(__dirname, './commit/index.html'),
         compare: path.resolve(__dirname, './compare/index.html'),
       },
     },

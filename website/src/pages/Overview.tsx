@@ -7,10 +7,12 @@ interface OverviewProps {
   suites: Suite[]
 }
 
-function parsePrebundleDebugLog(log: string): number {
-  const regex = /bundled in (.+)ms/
-  const [, time] = regex.exec(log)!
-  return parseFloat(time)
+function parseStartDebugLog(log: string): Record<string, number> {
+  const readyRegex = /ready in (.+) ms/
+  const bundleRegex = /bundled in (.+)ms/
+  const [, readyTime] = readyRegex.exec(log)!
+  const [, bundleTime] = bundleRegex.exec(log)!
+  return { ready: parseFloat(readyTime), bundle: parseFloat(bundleTime) }
 }
 
 function parseBuildDebugLog(log: string): number {
@@ -23,7 +25,10 @@ interface DataType {
   key: string
   name: string
   buildCost: number
-  devStartCost: number
+  devColdStartCost: number
+  devColdBundleCost: number
+  devHotStartCost: number
+  devHotBundleCost: number
 }
 
 const columns: ColumnsType<DataType> = [
@@ -34,13 +39,31 @@ const columns: ColumnsType<DataType> = [
     render: (text) => <a>{text}</a>,
   },
   {
-    title: 'Dev Start Cost',
-    dataIndex: 'devStartCost',
-    key: 'devStartCost',
+    title: 'Dev cold start cost',
+    dataIndex: 'devColdStartCost',
+    key: 'devColdStartCost',
     render: (text) => <span className="font-mono tabular-nums">{text}ms</span>,
   },
   {
-    title: 'Build Cost',
+    title: 'Dev cold bundle cost',
+    dataIndex: 'devColdBundleCost',
+    key: 'devColdStartCost',
+    render: (text) => <span className="font-mono tabular-nums">{text}ms</span>,
+  },
+  {
+    title: 'Dev hot start cost',
+    dataIndex: 'devHotStartCost',
+    key: 'devHotStartCost',
+    render: (text) => <span className="font-mono tabular-nums">{text}ms</span>,
+  },
+  {
+    title: 'Dev hot bundle cost',
+    dataIndex: 'devHotBundleCost',
+    key: 'devHotStartCost',
+    render: (text) => <span className="font-mono tabular-nums">{text}ms</span>,
+  },
+  {
+    title: 'Build cost',
     dataIndex: 'buildCost',
     key: 'buildCost',
     render: (text) => <span className="font-mono tabular-nums">{text}s</span>,
@@ -52,10 +75,10 @@ const SummaryText = ({
   dataKey,
 }: {
   data: readonly DataType[]
-  dataKey: Extract<keyof DataType, 'buildCost' | 'devStartCost'>
+  dataKey: Exclude<keyof DataType, 'key' | 'name'>
 }) => {
   const diff = data[1][dataKey] - data[0][dataKey]
-  const percent = parseFloat(((diff / data[0].devStartCost) * 100).toFixed(3))
+  const percent = parseFloat(((diff / data[0][dataKey]) * 100).toFixed(3))
 
   const displayPercent = new Intl.NumberFormat('en-US', {
     signDisplay: 'exceptZero',
@@ -71,9 +94,48 @@ const SummaryText = ({
 }
 
 export const Overview = ({ suites, compares }: OverviewProps) => {
+  const suitesGroups: Record<string, Suite[]> = {}
+  for (let index = 0; index < suites.length; index++) {
+    const suite = suites[index]
+    for (const item of Object.keys(suite)) {
+      const [, caseId, rest] = /^perf-(\d+)-(.*)/.exec(suite[item].name)!
+      if (!suitesGroups[caseId]) {
+        suitesGroups[caseId] = [{}, {}]
+      }
+      suitesGroups[caseId][index][rest] = suite[item]
+    }
+  }
+
+  return (
+    <>
+      {Object.keys(suitesGroups).map((suitesKey, index) => {
+        const suites = suitesGroups[suitesKey]
+        return (
+          <div className="mx-8 my-8">
+            <h2 className="mb-2 ml-1 font-mono">perf {suitesKey}</h2>
+            <OverviewItem key={index} suites={suites} compares={compares} />
+          </div>
+        )
+      })}
+    </>
+  )
+}
+
+const OverviewItem = ({ suites, compares }: OverviewProps) => {
   const keyMetrics = suites.map((suite) => {
+    const { ready: coldReady, bundle: coldBundle } = parseStartDebugLog(
+      suite['dev-start-cold-debug-log.txt'].payload
+    )
+
+    const { ready: hotReady, bundle: hotBundle } = parseStartDebugLog(
+      suite['dev-start-hot-debug-log.txt'].payload
+    )
+
     return {
-      start: parsePrebundleDebugLog(suite['dev-start-debug-log.txt'].payload),
+      coldStart: coldReady,
+      coldBundle: coldBundle,
+      hotStart: hotReady,
+      hotBundle: hotBundle,
       build: parseBuildDebugLog(suite['build-debug-log.txt'].payload),
     }
   })
@@ -82,14 +144,16 @@ export const Overview = ({ suites, compares }: OverviewProps) => {
     return {
       key: compares[index].sha,
       name: `${compares[index].owner}/${compares[index].repo}@${compares[index].sha}`,
-      devStartCost: keyMetrics[index].start,
+      devColdStartCost: keyMetrics[index].coldStart,
+      devColdBundleCost: keyMetrics[index].coldBundle,
+      devHotStartCost: keyMetrics[index].hotStart,
+      devHotBundleCost: keyMetrics[index].hotBundle,
       buildCost: keyMetrics[index].build,
     }
   })
 
   return (
     <Table
-      className="mx-8"
       bordered
       columns={columns}
       dataSource={tableData}
@@ -99,9 +163,18 @@ export const Overview = ({ suites, compares }: OverviewProps) => {
           <Table.Summary.Row>
             <Table.Summary.Cell index={0}></Table.Summary.Cell>
             <Table.Summary.Cell index={1}>
-              {<SummaryText data={data} dataKey={'devStartCost'} />}
+              {<SummaryText data={data} dataKey={'devColdStartCost'} />}
             </Table.Summary.Cell>
             <Table.Summary.Cell index={2}>
+              {<SummaryText data={data} dataKey={'devColdStartCost'} />}
+            </Table.Summary.Cell>
+            <Table.Summary.Cell index={3}>
+              {<SummaryText data={data} dataKey={'devHotStartCost'} />}
+            </Table.Summary.Cell>
+            <Table.Summary.Cell index={4}>
+              {<SummaryText data={data} dataKey={'devHotBundleCost'} />}
+            </Table.Summary.Cell>
+            <Table.Summary.Cell index={5}>
               {<SummaryText data={data} dataKey={'buildCost'} />}
             </Table.Summary.Cell>
           </Table.Summary.Row>
