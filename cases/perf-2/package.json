@@ -1,0 +1,28 @@
+{
+  "name": "performance-compare",
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "clsx": "^1.2.1",
+    "playwright": "^1.32.1",
+    "react": "18",
+    "react-dom": "18"
+  },
+  "devDependencies": {
+    "@types/react": "18",
+    "@types/react-dom": "18",
+    "@vitejs/plugin-react": "^3.1.0",
+    "@vitejs/plugin-react-swc": "^3.2.0",
+    "vite": "file:../vite"
+  },
+  "scripts": {
+    "start:vite": "vite",
+    "start:vite-swc": "vite -c vite.swc.config.ts"
+  },
+  "browserslist": [
+    "Chrome >= 87, Firefox >= 78, Safari >= 14, Edge >= 88"
+  ],
+  "alias": {
+    "process": false
+  }
+}

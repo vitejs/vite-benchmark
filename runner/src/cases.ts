@@ -1,9 +1,30 @@
-import { benchmark as perf1Bench } from './cases/perf-1'
+import { execa } from 'execa'
 import fsExtra from 'fs-extra'
-import { CASE_TEMP_DIR, CASE_DIR } from './constant'
 import path from 'path'
 import colors from 'picocolors'
-import { execa } from 'execa'
+
+import { Bench } from './Bench'
+import { CASE_DIR, CASE_TEMP_DIR, UPLOAD_DIR_TEMP } from './constant'
+
+export const perf1 = ({ uniqueKey }: { uniqueKey: string }) =>
+  new Bench({
+    uniqueKey,
+    name: 'perf-1',
+    metrics: {
+      devStart: 'both',
+      build: true,
+    },
+  })
+
+export const perf2 = ({ uniqueKey }: { uniqueKey: string }) =>
+  new Bench({
+    uniqueKey,
+    name: 'perf-2',
+    metrics: {
+      devStart: 'both',
+      build: true,
+    },
+  })
 
 export async function runBenchmarks({
   viteDistDir,
@@ -24,5 +45,7 @@ export async function runBenchmarks({
     stdio: 'inherit',
   })
 
-  await perf1Bench({ uniqueKey }).run()
+  await fsExtra.remove(UPLOAD_DIR_TEMP)
+  await perf1({ uniqueKey }).run()
+  await perf2({ uniqueKey }).run()
 }

@@ -23,7 +23,7 @@ interface DataType {
   key: string
   name: string
   buildCost: number
-  devPrebundleCost: number
+  devStartCost: number
 }
 
 const columns: ColumnsType<DataType> = [
@@ -34,9 +34,9 @@ const columns: ColumnsType<DataType> = [
     render: (text) => <a>{text}</a>,
   },
   {
-    title: 'Dev Prebundle Cost',
-    dataIndex: 'devPrebundleCost',
-    key: 'devPrebundleCost',
+    title: 'Dev Start Cost',
+    dataIndex: 'devStartCost',
+    key: 'devStartCost',
     render: (text) => <span className="font-mono tabular-nums">{text}ms</span>,
   },
   {
@@ -52,12 +52,10 @@ const SummaryText = ({
   dataKey,
 }: {
   data: readonly DataType[]
-  dataKey: Extract<keyof DataType, 'buildCost' | 'devPrebundleCost'>
+  dataKey: Extract<keyof DataType, 'buildCost' | 'devStartCost'>
 }) => {
   const diff = data[1][dataKey] - data[0][dataKey]
-  const percent = parseFloat(
-    ((diff / data[0].devPrebundleCost) * 100).toFixed(3)
-  )
+  const percent = parseFloat(((diff / data[0].devStartCost) * 100).toFixed(3))
 
   const displayPercent = new Intl.NumberFormat('en-US', {
     signDisplay: 'exceptZero',
@@ -75,9 +73,7 @@ const SummaryText = ({
 export const Overview = ({ suites, compares }: OverviewProps) => {
   const keyMetrics = suites.map((suite) => {
     return {
-      prebundle: parsePrebundleDebugLog(
-        suite['dev-prebundle-debug-log.txt'].payload
-      ),
+      start: parsePrebundleDebugLog(suite['dev-start-debug-log.txt'].payload),
       build: parseBuildDebugLog(suite['build-debug-log.txt'].payload),
     }
   })
@@ -86,7 +82,7 @@ export const Overview = ({ suites, compares }: OverviewProps) => {
     return {
       key: compares[index].sha,
       name: `${compares[index].owner}/${compares[index].repo}@${compares[index].sha}`,
-      devPrebundleCost: keyMetrics[index].prebundle,
+      devStartCost: keyMetrics[index].start,
       buildCost: keyMetrics[index].build,
     }
   })
@@ -103,7 +99,7 @@ export const Overview = ({ suites, compares }: OverviewProps) => {
           <Table.Summary.Row>
             <Table.Summary.Cell index={0}></Table.Summary.Cell>
             <Table.Summary.Cell index={1}>
-              {<SummaryText data={data} dataKey={'devPrebundleCost'} />}
+              {<SummaryText data={data} dataKey={'devStartCost'} />}
             </Table.Summary.Cell>
             <Table.Summary.Cell index={2}>
               {<SummaryText data={data} dataKey={'buildCost'} />}

@@ -13,9 +13,11 @@ type Profile = {
 // export type Profiles = Record<string, Profile>
 export interface Suite {
   'build-debug-log.txt': TxtLog
-  'build-CPU.cpuprofile': Profile
-  'dev-prebundle-debug-log.txt': TxtLog
-  'dev-prebundle-CPU.cpuprofile': Profile
+  'build-cpu.cpuprofile': Profile
+  'dev-start-cold-debug-log.txt': TxtLog
+  'dev-start-cold-cpu.cpuprofile': Profile
+  'dev-start-hot-debug-log.txt': TxtLog
+  'dev-start-hot-cpu.cpuprofile': Profile
 }
 
 export type SuiteKeys = keyof Suite
