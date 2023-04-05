@@ -2,50 +2,144 @@ import { execa } from 'execa'
 import fsExtra from 'fs-extra'
 import path from 'path'
 import colors from 'picocolors'
+import { groupBy } from 'lodash-es'
+import * as stat from 'simple-statistics'
 
-import { Bench } from './Bench'
-import { CASE_DIR, CASE_TEMP_DIR, UPLOAD_DIR_TEMP } from './constant'
+import { browser, ServeBench } from './ServeBench'
+import { CASES_DIR, CASES_TEMP_DIR, UPLOAD_DIR_TEMP } from './constant'
+import { Compare, ServeResult, composeCaseTempDir } from './utils'
 
-export const perf1 = ({ uniqueKey }: { uniqueKey: string }) =>
-  new Bench({
-    uniqueKey,
-    name: 'perf-1',
-    metrics: {
-      devStart: 'both',
-      build: true,
-    },
-  })
-
-export const perf2 = ({ uniqueKey }: { uniqueKey: string }) =>
-  new Bench({
-    uniqueKey,
-    name: 'perf-2',
-    metrics: {
-      devStart: 'both',
-      build: true,
-    },
-  })
-
-export async function runBenchmarks({
-  viteDistDir,
-  uniqueKey,
+export async function prepareBenches({
+  compares,
+  viteDistDirs,
 }: {
-  viteDistDir: string
-  uniqueKey: string
+  compares: Compare[]
+  viteDistDirs: string[]
 }) {
-  console.log(
-    colors.cyan(`Running benchmarks of ${decodeURIComponent(uniqueKey)}`)
-  )
-  await fsExtra.remove(CASE_TEMP_DIR)
-  await fsExtra.copy(CASE_DIR, CASE_TEMP_DIR)
-  await fsExtra.copy(viteDistDir, path.resolve(CASE_TEMP_DIR, './vite'))
+  console.log(colors.cyan(`Installing dependencies for compares`))
+  await fsExtra.remove(UPLOAD_DIR_TEMP)
+  await fsExtra.remove(CASES_TEMP_DIR)
+  for (const [index, compare] of compares.entries()) {
+    const caseTempDir = composeCaseTempDir(compare)
+    await fsExtra.copy(CASES_DIR, caseTempDir)
+    await fsExtra.copy(
+      viteDistDirs[index]!,
+      path.resolve(caseTempDir, './vite')
+    )
 
-  await execa('pnpm', ['i'], {
-    cwd: CASE_TEMP_DIR,
-    stdio: 'inherit',
+    await execa('pnpm', ['i'], {
+      cwd: caseTempDir,
+      stdio: 'inherit',
+    })
+  }
+}
+
+export async function runBenches({
+  compares,
+  repeats,
+}: {
+  compares: Compare[]
+  repeats: number
+}) {
+  console.log(colors.cyan(`Running benchmarks`))
+  const baseCases = [
+    {
+      id: 'perf-1',
+      port: 5173,
+      script: 'dev',
+      viteCache: './node_modules/.vite',
+    },
+    {
+      id: 'perf-2',
+      port: 5173,
+      script: 'start:vite',
+      viteCache: './node_modules/.vite',
+    } as const,
+  ]
+
+  // A(perf1) -> B(perf1) -> A(perf2) -> B(perf2) and repeat for several times
+  const totalResults: ServeResult[] = []
+  for (let i = 0; i < repeats; i++) {
+    console.log(`Running benchmarks for number ${i + 1} time`)
+    for (const basePerf of baseCases) {
+      for (const compare of compares) {
+        const perf = new ServeBench({
+          ...basePerf,
+          casesDir: composeCaseTempDir(compare),
+        })
+        const result = await perf.run()
+        totalResults.push({
+          ...result,
+          index: i,
+          caseId: basePerf.id,
+          uniqueKey: compare.uniqueKey,
+        })
+      }
+    }
+  }
+
+  await browser.close()
+
+  const groupsByCase = groupBy(totalResults, (result) => result.caseId)
+  Object.keys(groupsByCase).forEach((key) => {
+    const groupsByCaseByRef = groupBy(
+      groupsByCase[key],
+      (result) => result.uniqueKey
+    )
+    Object.keys(groupsByCaseByRef).forEach((ref) => {
+      console.log(colors.cyan(`Results for ${key} with ${ref}`))
+      console.table(groupsByCaseByRef[ref])
+    })
   })
 
-  await fsExtra.remove(UPLOAD_DIR_TEMP)
-  await perf1({ uniqueKey }).run()
-  await perf2({ uniqueKey }).run()
+  const finalResults = []
+  for (const compare of compares) {
+    for (const { id } of baseCases) {
+      finalResults.push({
+        repoRef: decodeURIComponent(compare.uniqueKey),
+        caseId: id,
+        ...calcAverageOfMetric(totalResults, id, compare.uniqueKey),
+      })
+    }
+  }
+
+  const groups = groupBy(finalResults, (result) => result.caseId)
+  Object.keys(groups).forEach((key) => {
+    console.log(colors.cyan(`Results for ${key}`))
+    console.table(groups[key])
+  })
+}
+
+function calcAverageOfMetric(
+  results: ServeResult[],
+  caseId: string,
+  uniqueKey: string
+) {
+  const filtered = results.filter(
+    (result) => result.caseId === caseId && result.uniqueKey === uniqueKey
+  )
+
+  const startups = filtered.map((result) => result.startup)
+  const serverStarts = filtered.map((result) => result.serverStart)
+
+  const startupStat = {
+    mean: stat.mean(startups).toFixed(0),
+    median: stat.median(startups).toFixed(0),
+    standardDeviation: stat.standardDeviation(startups).toFixed(2),
+  }
+
+  const serverStartStat = {
+    mean: stat.mean(serverStarts).toFixed(0),
+    median: stat.median(serverStarts).toFixed(0),
+    standardDeviation: stat.standardDeviation(serverStarts).toFixed(2),
+  }
+
+  return {
+    startupMean: startupStat.mean,
+    startupMedian: startupStat.median,
+    startupStandardDeviation: startupStat.standardDeviation,
+    serverStartMean: serverStartStat.mean,
+    serverStartMedian: serverStartStat.median,
+    serverStartStandardDeviation: serverStartStat.standardDeviation,
+  }
 }

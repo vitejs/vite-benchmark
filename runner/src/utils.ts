@@ -11,16 +11,24 @@ import { Octokit } from 'octokit'
 import colors from 'picocolors'
 import tar from 'tar'
 
-import { VITE_DIR } from './constant'
+import { CASES_TEMP_DIR, VITE_DIR } from './constant'
 
 const octokit = new Octokit({})
 
-interface Compare {
+export interface Compare {
   owner: string
   repo: string
   sha: string
   ref: string | null
   uniqueKey: string
+}
+
+export interface ServeResult {
+  index: number
+  caseId: string
+  uniqueKey: string
+  startup: number
+  serverStart: number
 }
 
 export async function parseCompare(compare: string): Promise<Compare[]> {
@@ -153,4 +161,15 @@ export function composeCompareUrl(compares: Compare[]): string {
   const compareQuery = compares.map((c) => c.uniqueKey).join('...')
 
   return `${base}/?compares=${compareQuery}`
+}
+
+export function composeCaseTempDir(compare: Compare): string {
+  return path.resolve(
+    CASES_TEMP_DIR,
+    `${compare.owner}___${compare.repo}___${compare.sha.slice(0, 7)}`
+  )
+}
+
+export function summarizeResult(result: ServeResult): string {
+  return ''
 }

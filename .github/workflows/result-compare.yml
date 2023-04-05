@@ -1,0 +1,47 @@
+name: Result Compare
+on:
+  workflow_dispatch:
+    inputs:
+      to_compares:
+        description: repositories to compare with, ex. "vitejs/vite@main,vitejs/vitepress@1f011d8"
+        required: true
+        type: string
+      repeats:
+        description: number of benchmark repeats
+        required: true
+        type: number
+        default: 3
+  workflow_call:
+    inputs:
+      to_compares:
+        description: repositories to compare with, ex. "vitejs/vite@main,vitejs/vitepress@1f011d8"
+        required: true
+        type: string
+      repeats:
+        description: number of benchmark repeats
+        required: true
+        type: number
+        default: 3
+jobs:
+  benchmark:
+    name: Run benchmark
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: pnpm/action-setup@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: cd runner && pnpm install
+
+      - name: Run benchmark
+        id: run_benchmark
+        run: cd runner && pnpm tsx src/cli.ts bench --compares="${{ inputs.to_compares }}" --repeats="${{ inputs.repeats }}"
