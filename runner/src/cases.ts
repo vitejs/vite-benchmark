@@ -121,25 +121,29 @@ function calcAverageOfMetric(
 
   const startups = filtered.map((result) => result.startup)
   const serverStarts = filtered.map((result) => result.serverStart)
+  const fcps = filtered.map((result) => result.fcp)
 
   const startupStat = {
     mean: stat.mean(startups).toFixed(0),
     median: stat.median(startups).toFixed(0),
-    standardDeviation: stat.standardDeviation(startups).toFixed(2),
   }
 
   const serverStartStat = {
     mean: stat.mean(serverStarts).toFixed(0),
     median: stat.median(serverStarts).toFixed(0),
-    standardDeviation: stat.standardDeviation(serverStarts).toFixed(2),
+  }
+
+  const fcpStat = {
+    mean: stat.mean(fcps).toFixed(0),
+    median: stat.median(fcps).toFixed(0),
   }
 
   return {
     startupMean: startupStat.mean,
     startupMedian: startupStat.median,
-    startupStandardDeviation: startupStat.standardDeviation,
     serverStartMean: serverStartStat.mean,
     serverStartMedian: serverStartStat.median,
-    serverStartStandardDeviation: serverStartStat.standardDeviation,
+    fcpMean: fcpStat.mean,
+    fcpMedian: fcpStat.median,
   }
 }

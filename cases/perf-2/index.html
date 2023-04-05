@@ -10,4 +10,11 @@
   <div id="root"></div>
   <script type="module" src="./src/index.tsx"></script>
 </body>
+<script>
+  new PerformanceObserver((entryList) => {
+    for (const entry of entryList.getEntriesByName("first-contentful-paint")) {
+      console.log(`[vite-perf]: fcp ${entry.startTime}ms`);
+    }
+  }).observe({ type: "paint", buffered: true });
+</script>
 </html>

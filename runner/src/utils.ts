@@ -29,6 +29,7 @@ export interface ServeResult {
   uniqueKey: string
   startup: number
   serverStart: number
+  fcp: number
 }
 
 export async function parseCompare(compare: string): Promise<Compare[]> {

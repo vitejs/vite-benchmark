@@ -53,19 +53,33 @@ export class ServeBench {
   public async run() {
     await this.cleanCache()
     console.log(`Running ${this.caseDir} ${this.id}`)
-    const totalResult: Record<'startup' | 'serverStart', number> = {
+    const totalResult: Record<'startup' | 'serverStart' | 'fcp', number> = {
       startup: 0,
       serverStart: 0,
+      fcp: 0,
     }
 
     const page = await (await browser.newContext()).newPage()
     await new Promise((resolve) => setTimeout(resolve, 1000)) // give some rest
+
+    const fcpPromise = new Promise((resolve) => {
+      page.on('console', (msg) => {
+        const regRes = /\[vite-perf\]: (.*) (\d+(?:\.\d+)?)ms/.exec(msg.text())
+        if (regRes) {
+          const [, type, time] = regRes
+          // @ts-ignore
+          totalResult[type] = Number(time)
+          resolve(undefined)
+        }
+      })
+    })
 
     const loadPromise = page.waitForEvent('load')
     const pageLoadStart = Date.now()
     const serverStartTime = await this.startServer()
     page.goto(`http://localhost:${this.port}`)
     await loadPromise
+    await fcpPromise
     totalResult.startup += Date.now() - pageLoadStart
     if (serverStartTime !== null) {
       totalResult.serverStart += serverStartTime
@@ -74,7 +88,6 @@ export class ServeBench {
     this.stopServer()
     await page.close()
     await new Promise((resolve) => setTimeout(resolve, 1000)) // give some rest
-    // console.log(`Finished ${this.caseDir} ${this.id}`, totalResult)
 
     return totalResult
   }
