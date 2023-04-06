@@ -47,12 +47,14 @@ export async function runBenches({
       id: 'perf-1',
       port: 5173,
       script: 'dev',
+      displayName: 'vite 2.7 slow',
       viteCache: './node_modules/.vite',
     },
     {
       id: 'perf-2',
       port: 5173,
       script: 'start:vite',
+      displayName: '1000 React components',
       viteCache: './node_modules/.vite',
     } as const,
   ]
@@ -61,17 +63,18 @@ export async function runBenches({
   const totalResults: ServeResult[] = []
   for (let i = 0; i < repeats; i++) {
     console.log(`Running benchmarks for number ${i + 1} time`)
-    for (const basePerf of baseCases) {
+    for (const baseCase of baseCases) {
       for (const compare of compares) {
         const perf = new ServeBench({
-          ...basePerf,
+          ...baseCase,
           casesDir: composeCaseTempDir(compare),
         })
         const result = await perf.run()
         totalResults.push({
           ...result,
           index: i,
-          caseId: basePerf.id,
+          caseId: baseCase.id,
+          displayName: baseCase.displayName,
           uniqueKey: compare.uniqueKey,
         })
       }
@@ -94,10 +97,11 @@ export async function runBenches({
 
   const finalResults = []
   for (const compare of compares) {
-    for (const { id } of baseCases) {
+    for (const { id, displayName } of baseCases) {
       finalResults.push({
         repoRef: decodeURIComponent(compare.uniqueKey),
         caseId: id,
+        displayName,
         ...calcAverageOfMetric(totalResults, id, compare.uniqueKey),
       })
     }

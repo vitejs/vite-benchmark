@@ -28,6 +28,7 @@ export interface Compare {
 export interface ServeResult {
   index: number
   caseId: string
+  displayName: string
   uniqueKey: string
   startup: number
   serverStart: number

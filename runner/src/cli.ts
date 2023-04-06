@@ -35,7 +35,7 @@ cli
     if (options.pullNumber) {
       const { source, target } = await getPullRequestData(options.pullNumber)
       compares = await parseCompare(
-        `${source.owner}/${source.repo}@${source.sha},${target.owner}/${target.repo}@${target.sha}`
+        `${target.owner}/${target.repo}@${target.sha},${source.owner}/${source.repo}@${source.sha}`
       )
     } else {
       compares = await parseCompare(options.compares)
@@ -106,8 +106,8 @@ cli
           )
           .addHeading('Benchmark Result', 2)
 
-        Object.entries(benches).forEach(([key, bench]) => {
-          core.summary.addHeading(key, 3)
+        Object.entries(benches).forEach(([_key, bench]) => {
+          core.summary.addHeading(bench[0]!.displayName, 3)
           core.summary.addTable([
             [
               { data: 'Ref', header: true },
