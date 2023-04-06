@@ -108,6 +108,8 @@ export async function runBenches({
     console.log(colors.cyan(`Results for ${key}`))
     console.table(groups[key])
   })
+
+  return groups
 }
 
 function calcAverageOfMetric(

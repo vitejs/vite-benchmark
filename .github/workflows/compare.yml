@@ -10,7 +10,7 @@ on:
         description: number of benchmark repeats
         required: true
         type: number
-        default: 3
+        default: 10
   workflow_call:
     inputs:
       to_compares:
@@ -21,7 +21,7 @@ on:
         description: number of benchmark repeats
         required: true
         type: number
-        default: 3
+        default: 10
 jobs:
   benchmark:
     name: Run benchmark

@@ -11,9 +11,11 @@ import { Octokit } from 'octokit'
 import colors from 'picocolors'
 import tar from 'tar'
 
-import { CASES_TEMP_DIR, VITE_DIR } from './constant'
+import { REPO_OWNER, REPO_NAME, CASES_TEMP_DIR, VITE_DIR } from './constant'
 
-const octokit = new Octokit({})
+const octokit = new Octokit({
+  auth: process.env['GITHUB_TOKEN'],
+})
 
 export interface Compare {
   owner: string
@@ -30,6 +32,27 @@ export interface ServeResult {
   startup: number
   serverStart: number
   fcp: number
+}
+
+export async function getPullRequestData(pullNumber: number) {
+  const { data: pullRequest } = await octokit.rest.pulls.get({
+    owner: REPO_OWNER,
+    repo: REPO_NAME,
+    pull_number: pullNumber,
+  })
+
+  return {
+    source: {
+      owner: pullRequest.head.repo!.owner.login,
+      repo: pullRequest.head.repo!.name,
+      sha: pullRequest.head.sha,
+    },
+    target: {
+      owner: pullRequest.base.repo.owner.login,
+      repo: pullRequest.base.repo.name,
+      sha: pullRequest.base.sha,
+    },
+  }
 }
 
 export async function parseCompare(compare: string): Promise<Compare[]> {

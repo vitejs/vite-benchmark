@@ -10,7 +10,7 @@ on:
         description: number of benchmark repeats
         required: true
         type: number
-        default: 3
+        default: 10
   workflow_call:
     inputs:
       pull_number:
@@ -21,7 +21,7 @@ on:
         description: number of benchmark repeats
         required: true
         type: number
-        default: 3
+        default: 10
 jobs:
   benchmark:
     name: Run benchmark
@@ -42,38 +42,6 @@ jobs:
       - name: Install dependencies
         run: cd runner && pnpm install
 
-      - uses: actions/github-script@v6
-        id: get-pr-data
-        with:
-          script: |
-            const { pull_number } = context.payload.inputs
-            const { data: pr } = await github.rest.pulls.get({
-              owner: 'vitejs',
-              repo: 'vite',
-              pull_number: pull_number
-            })
-
-            const result = {
-              num: pull_number,
-              branchName: pr.head.ref,
-              repo: pr.head.repo.full_name
-            }
-
-            console.log('PR data:', result)
-            return result
-
-      - uses: actions/github-script@v6
-        id: calc_compares
-        with:
-          result-encoding: string
-          script: |
-            const prData = ${{ steps.get-pr-data.outputs.result }}
-            const base = `vitejs/vite@heads/main`
-            const to = `${prData.repo}@heads/${prData.branchName}`
-            const compares = `${base},${to}`
-            console.log('compares to inputs:', compares)
-            core.setOutput("compares", compares)
-
       - name: Run benchmark
         id: run_benchmark
-        run: cd runner && pnpm tsx src/cli.ts bench --compares="${{ steps.calc_compares.outputs.compares }}" --repeats="${{ inputs.repeats }}"
+        run: cd runner && pnpm tsx src/cli.ts bench --pull-number="${{ inputs.pull_number }}" --repeats="${{ inputs.repeats }}"
