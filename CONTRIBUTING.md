@@ -12,7 +12,7 @@ First, `cd runner`.
 For example developing the workflow of `./github/workflows/pull-request.yml`, you could find an [open pull request](https://github.com/vitejs/vite/pulls) and run with the PR number:
 
 ```bash
-pnpm tsx src/cli.ts bench --pull-number=12725
+pnpm tsx src/cli.ts bench --pull-number=12725 --repeats=3
 ```
 
 This will run the benchmark process as on GitHub Actions, including
@@ -24,10 +24,10 @@ This will run the benchmark process as on GitHub Actions, including
 5. Run the benchmark process
 6. Report in terminal
 
-To make the test without the heavy process of cloning and building, you could adding following options:
+To make the test without the heavy process of cloning and building, you could adding following flags after have running a full process above. Then it will directly re-use the built vite dist without step `2`, `3`, `4`.
 
 ```bash
-pnpm tsx src/cli.ts bench --pull-number=12725 --skip-clone --skip-prepare
+pnpm tsx src/cli.ts bench --pull-number=12725 --repeats=3 --skip-clone --skip-prepare
 ```
 
-This will skip the `2`, `3`, `4` steps above. If you encounter GitHub API rate limit, you could add `GITHUB_TOKEN` with you PAT to environment variables to increase the rate limit.
+If you encounter GitHub API rate limit, you could add `GITHUB_TOKEN` with you PAT to environment variables to increase the rate limit.

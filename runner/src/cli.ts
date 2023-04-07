@@ -131,6 +131,7 @@ cli
         })
       }
 
+      core.setOutput('summary', core.summary.stringify())
       await core.summary.write()
     }
   })

@@ -11,17 +11,6 @@ on:
         required: true
         type: number
         default: 10
-  workflow_call:
-    inputs:
-      pull_number:
-        description: Pull Request index to run benchmark, ex. "12512"
-        required: true
-        type: string
-      repeats:
-        description: number of benchmark repeats
-        required: true
-        type: number
-        default: 10
 jobs:
   benchmark:
     name: Run benchmark
@@ -31,9 +20,7 @@ jobs:
         os: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v3
-
       - uses: pnpm/action-setup@v2
-
       - uses: actions/setup-node@v3
         with:
           node-version-file: '.nvmrc'
