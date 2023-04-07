@@ -114,8 +114,9 @@ cli
             const diff = to - from
             if (diff === 0)
               return '-'
+            const emoji = diff > 0 ? '🔺' : '⚡️'
             const percent = from === 0  ? '-' : ` (${((diff / from) * 100).toFixed(2)}%)`
-            return diff.toFixed(2) + percent
+            return diff + percent + ' ' + emoji
           }
 
           const firstBench = bench[0]!
