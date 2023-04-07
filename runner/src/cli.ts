@@ -83,6 +83,7 @@ cli
     if (isGitHubActions) {
       const core = await import('@actions/core')
       const isPull = !!options.pullNumber
+      const repoLink = 'https://github.com/fi3ework/vite-benchmark/tree/main'
       if (isPull) {
         core.summary
           .addRaw(
@@ -106,11 +107,22 @@ cli
           )
           .addHeading('Benchmark Result', 2)
 
-        Object.entries(benches).forEach(([_key, bench]) => {
-          core.summary.addHeading(bench[0]!.displayName, 3)
+        Object.entries(benches).forEach(([_key, bench], idx) => {
+          function formatPercent(from: number | string, to: number | string) {
+            from = +from
+            to = +to
+            const diff = to - from
+            if (diff === 0)
+              return '-'
+            const percent = from === 0  ? '-' : ` (${((diff / from) * 100).toFixed(2)}%)`
+            return diff.toFixed(2) + percent
+          }
+
+          const firstBench = bench[0]!
+          core.summary.addHeading(`Case ${idx + 1}: [${firstBench.displayName}](${repoLink}/cases/${firstBench.caseId})`, 3)
           core.summary.addTable([
             [
-              { data: 'Ref', header: true },
+              { data: 'ref', header: true },
               { data: 'start up mean', header: true },
               { data: 'start up median', header: true },
               { data: 'server start mean', header: true },
@@ -126,6 +138,27 @@ cli
               b.serverStartMedian,
               b.fcpMean,
               b.fcpMedian,
+            ]),
+          ])
+
+          core.summary.addTable([
+            [
+              { data: 'ref', header: true },
+              { data: 'start up mean', header: true },
+              { data: 'start up median', header: true },
+              { data: 'server start mean', header: true },
+              { data: 'server start median', header: true },
+              { data: 'fcp mean', header: true },
+              { data: 'fcp median', header: true },
+            ],
+            ...bench.map((b) => [
+              b.repoRef,
+              formatPercent(firstBench.startupMean, b.startupMean),
+              formatPercent(firstBench.startupMedian, b.startupMedian),
+              formatPercent(firstBench.serverStartMean, b.serverStartMean),
+              formatPercent(firstBench.serverStartMedian, b.serverStartMedian),
+              formatPercent(firstBench.fcpMean, b.fcpMean),
+              formatPercent(firstBench.fcpMedian, b.fcpMedian),
             ]),
           ])
         })
