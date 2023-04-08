@@ -112,15 +112,20 @@ cli
             from = +from
             to = +to
             const diff = to - from
-            if (diff === 0)
-              return '-'
+            if (diff === 0) return '-'
             const emoji = diff > 0 ? '🔺' : '⚡️'
-            const percent = from === 0  ? '-' : ` (${((diff / from) * 100).toFixed(2)}%)`
+            const percent =
+              from === 0 ? '-' : ` (${((diff / from) * 100).toFixed(2)}%)`
             return diff + percent + ' ' + emoji
           }
 
           const firstBench = bench[0]!
-          core.summary.addHeading(`Case ${idx + 1}: [${firstBench.displayName}](${repoLink}/cases/${firstBench.caseId})`, 3)
+          core.summary.addHeading(
+            `Case ${idx + 1}: <a href="${repoLink}/cases/${
+              firstBench.caseId
+            }">${firstBench.displayName}</a>`,
+            3
+          )
           core.summary.addTable([
             [
               { data: 'ref', header: true },
