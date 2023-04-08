@@ -107,18 +107,22 @@ cli
           )
           .addHeading('Benchmark Result', 2)
 
-        Object.entries(benches).forEach(([_key, bench], idx) => {
-          function formatPercent(from: number | string, to: number | string) {
-            from = +from
-            to = +to
-            const diff = to - from
-            if (diff === 0) return '-'
-            const emoji = diff > 0 ? '🔺' : '⚡️'
-            const percent =
-              from === 0 ? '-' : ` (${((diff / from) * 100).toFixed(2)}%)`
-            return diff + percent + ' ' + emoji
-          }
+        function formatPercent(from: number | string, to: number | string) {
+          from = +from
+          to = +to
+          const diff = to - from
+          if (diff === 0) return '-'
+          const diffPercent = from === 0 ? 0 : diff / from
+          const emoji = Math.abs(diffPercent) < 0.0003 // ignore insignificant diff
+            ? ''
+            : diffPercent > 0
+              ? ' 🔺'
+              : ' ⚡️'
+          const percent = from === 0 ? '-' : ` (${diffPercent > 0 ? '+' : ''}${(diffPercent * 100).toFixed(2)}%)`
+          return diff + percent + emoji
+        }
 
+        Object.entries(benches).forEach(([_key, bench], idx) => {
           const firstBench = bench[0]!
           core.summary.addHeading(
             `Case ${idx + 1}: <a href="${repoLink}/cases/${
