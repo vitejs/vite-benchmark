@@ -1,9 +1,9 @@
-name: Pull Request
+name: Pull Request Triggered by Comment
 on:
   workflow_dispatch:
     inputs:
       pull_number:
-        description: Pull Request index to run benchmark, ex. "12512"
+        description: Pull Request number to run benchmark (e.g. 12512)
         required: true
         type: string
       repeats:
@@ -36,7 +36,7 @@ jobs:
               issue_number: Number(context.payload.inputs.pull_number),
               owner: context.repo.owner,
               repo: 'vite',
-              body: `⏳ Triggered benchmark CI: ${urlLink}`
+              body: `⏳ Triggered benchmark: ${urlLink}`
             })
             return comment.id
   execute-all:
@@ -60,7 +60,7 @@ jobs:
 
       - name: Run benchmark
         id: run_benchmark
-        run: cd runner && pnpm tsx src/cli.ts bench --pull-number=12787 --repeats="${{ inputs.repeats }}"
+        run: cd runner && pnpm tsx src/cli.ts bench --pull-number="${{ inputs.pull_number }}" --repeats="${{ inputs.repeats }}"
 
   update-comment:
     runs-on: ubuntu-latest
@@ -85,9 +85,7 @@ jobs:
               per_page: 100
             });
 
-            console.log('jobs', jobs)
-
-            let result = jobs
+            const result = jobs
               .filter(job => job.name.startsWith('execute-all'))
               .map(job => {
                 return { conclusion: job.conclusion, link: job.html_url }
@@ -96,12 +94,12 @@ jobs:
             const url = `${context.serverUrl}//${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
             const urlLink = `[Open](${url})`
 
-            const summaryStr= `${{ needs.execute-all.outputs.summary }}`
-            console.log('summary', summaryStr)
+            const summary = `${{ needs.execute-all.outputs.summary }}`
+            console.log('summary', summary)
 
             await github.rest.issues.updateComment({
               owner: context.repo.owner,
               repo: 'vite',
               comment_id: ${{ needs.init.outputs.comment-id }},
-              body: summaryStr
+              body: summary
             })

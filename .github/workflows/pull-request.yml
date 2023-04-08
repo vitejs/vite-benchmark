@@ -3,14 +3,14 @@ on:
   workflow_dispatch:
     inputs:
       pull_number:
-        description: Pull Request index to run benchmark, ex. "12512"
+        description: Pull Request number to run benchmark (e.g. 12512)
         required: true
         type: string
       repeats:
         description: number of benchmark repeats
         required: true
-        type: number
-        default: 10
+        type: string
+        default: '10'
 jobs:
   benchmark:
     name: Run benchmark
