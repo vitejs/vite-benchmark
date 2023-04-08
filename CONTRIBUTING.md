@@ -3,11 +3,11 @@
 ## Repository Set-up
 
 1. `corepack enable`
-2. `pnpm i`
+2. `pnpm run bootstrap`
 
 ## Local development
 
-First, `cd runner`.
+cd `cd runner` first.
 
 For example developing the workflow of `./github/workflows/pull-request.yml`, you could find an [open pull request](https://github.com/vitejs/vite/pulls) and run with the PR number:
 
@@ -20,7 +20,7 @@ This will run the benchmark process as on GitHub Actions, including
 1. Request GitHub API to get the pull request information
 2. Clone the Vite repository of source branch and target branch (usually `main`)
 3. Build the `vite` packages of source branch and target branch
-4. Copy the `vite` packages dist to `<project>/vite`
+4. Copy the `vite` packages dist to `${workspaceFolder}/vite`
 5. Run the benchmark process
 6. Report in terminal
 

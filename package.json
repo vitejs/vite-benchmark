@@ -1,7 +1,7 @@
 {
   "packageManager": "pnpm@7.30.5",
   "scripts": {
-    "benchmark": "(cd runner && pnpm benchmark:prod)"
+    "bootstrap": "pnpm i && cd runner && pnpm i"
   },
   "devDependencies": {
     "prettier": "^2.8.4"

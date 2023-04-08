@@ -83,7 +83,7 @@ cli
     if (isGitHubActions) {
       const core = await import('@actions/core')
       const isPull = !!options.pullNumber
-      const repoLink = 'https://github.com/fi3ework/vite-benchmark/tree/main'
+      const repoLink = 'https://github.com/vitejs/vite-benchmark/tree/main'
       if (isPull) {
         core.summary
           .addRaw(
@@ -113,12 +113,18 @@ cli
           const diff = to - from
           if (diff === 0) return '-'
           const diffPercent = from === 0 ? 0 : diff / from
-          const emoji = Math.abs(diffPercent) < 0.0003 // ignore insignificant diff
-            ? ''
-            : diffPercent > 0
+          const emoji =
+            Math.abs(diffPercent) < 0.0003 // ignore insignificant diff
+              ? ''
+              : diffPercent > 0
               ? ' 🔺'
               : ' ⚡️'
-          const percent = from === 0 ? '-' : ` (${diffPercent > 0 ? '+' : ''}${(diffPercent * 100).toFixed(2)}%)`
+          const percent =
+            from === 0
+              ? '-'
+              : ` (${diffPercent > 0 ? '+' : ''}${(diffPercent * 100).toFixed(
+                  2
+                )}%)`
           return diff + percent + emoji
         }
 

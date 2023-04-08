@@ -83,15 +83,15 @@ export async function runBenches({
 
   await browser.close()
 
-  const groupsByCase = groupBy(totalResults, (result) => result.caseId)
-  Object.keys(groupsByCase).forEach((key) => {
-    const groupsByCaseByRef = groupBy(
-      groupsByCase[key],
+  const groupedByCase = groupBy(totalResults, (result) => result.caseId)
+  Object.keys(groupedByCase).forEach((key) => {
+    const groupedByCaseByRef = groupBy(
+      groupedByCase[key],
       (result) => result.uniqueKey
     )
-    Object.keys(groupsByCaseByRef).forEach((ref) => {
+    Object.keys(groupedByCaseByRef).forEach((ref) => {
       console.log(colors.cyan(`Results for ${key} with ${ref}`))
-      console.table(groupsByCaseByRef[ref])
+      console.table(groupedByCaseByRef[ref])
     })
   })
 
@@ -107,13 +107,13 @@ export async function runBenches({
     }
   }
 
-  const groups = groupBy(finalResults, (result) => result.caseId)
-  Object.keys(groups).forEach((key) => {
+  const perfGroups = groupBy(finalResults, (result) => result.caseId)
+  Object.keys(perfGroups).forEach((key) => {
     console.log(colors.cyan(`Results for ${key}`))
-    console.table(groups[key])
+    console.table(perfGroups[key])
   })
 
-  return groups
+  return perfGroups
 }
 
 function calcAverageOfMetric(

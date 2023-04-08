@@ -181,8 +181,8 @@ export async function buildVite({
 }
 
 export function composeCompareUrl(compares: Compare[]): string {
-  // ex. https://fi3ework.github.io/vite-benchmark/compare/?compares=vitejs%2Fvite%401f011d8...vitejs%2Fvite%40c268cfa
-  const base = 'https://fi3ework.github.io/vite-benchmark/compare'
+  // ex. https://vitejs.github.io/vite-benchmark/compare/?compares=vitejs%2Fvite%401f011d8...vitejs%2Fvite%40c268cfa
+  const base = 'https://vitejs.github.io/vite-benchmark/compare'
   const compareQuery = compares.map((c) => c.uniqueKey).join('...')
 
   return `${base}/?compares=${compareQuery}`
