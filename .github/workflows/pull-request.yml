@@ -27,7 +27,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: cd runner && pnpm install
+        run: pnpm run bootstrap
 
       - name: Run benchmark
         id: run_benchmark
