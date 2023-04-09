@@ -27,8 +27,15 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm run bootstrap
+        run: |
+          pnpm run bootstrap
+          cd runner
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          pnpm playwright install chromium
 
       - name: Run benchmark
         id: run_benchmark
-        run: cd runner && pnpm tsx src/cli.ts bench --pull-number="${{ inputs.pull_number }}" --repeats="${{ inputs.repeats }}"
+        run: |
+          cd runner
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          pnpm tsx src/cli.ts bench --pull-number="${{ inputs.pull_number }}" --repeats="${{ inputs.repeats }}"
