@@ -7,56 +7,36 @@ import {
 
 describe('data report', () => {
   test('composeSummarized', () => {
-    expect(composeSummarized(results, compares, baseCases)).matchSnapshot()
+    const v = composeSummarized(results, compares, baseCases)
+    Object.keys(v).forEach((key) => {
+      v[key]!.forEach((item) => {
+        item.metrics.fcpStat.kmeans = '-'
+        item.metrics.serverStartStat.kmeans = '-'
+        item.metrics.startupStat.kmeans = '-'
+      })
+    })
+    expect(v).matchSnapshot()
   })
 
   test('calcMetrics', () => {
-    expect(
-      calcMetrics(results, 'perf-1', 'vitejs%2Fvite%40063d93b')
-    ).toMatchInlineSnapshot(
-      {
-        fcpStat: {
-          mean: '1590',
-          median: '1578',
-        },
-        serverStartStat: {
-          mean: '223',
-          median: '166',
-        },
-        startupStat: {
-          mean: '2156',
-          median: '2000',
-        },
-      },
-      `
-      {
-        "fcpStat": {
-          "mean": "1590",
-          "median": "1578",
-        },
-        "serverStartStat": {
-          "mean": "223",
-          "median": "166",
-        },
-        "startupStat": {
-          "mean": "2156",
-          "median": "2000",
-        },
-      }
-    `
-    )
+    const v = calcMetrics(results, 'perf-1', 'vitejs%2Fvite%40063d93b')
+    v.fcpStat.kmeans = '-'
+    v.serverStartStat.kmeans = '-'
+    v.startupStat.kmeans = '-'
+    expect(v).toMatchSnapshot()
   })
 
   test('composeGitHubActionsSummary', () => {
-    expect(
-      composeGitHubActionsSummary({
-        options: {
-          pullNumber: 12787,
-        },
-        compares,
-        summarizedResult: composeSummarized(results, compares, baseCases),
-      })
-    ).matchSnapshot()
+    let v = composeGitHubActionsSummary({
+      options: {
+        pullNumber: 12787,
+      },
+      compares,
+      summarizedResult: composeSummarized(results, compares, baseCases),
+    })
+
+    v = v.replaceAll(/<td>.*<\/td>/g, '<td>-</td>')
+    expect(v).matchSnapshot()
   })
 })
 

@@ -93,7 +93,9 @@ cli
         const { metrics, ...withoutMetrics } = item
         return {
           ...withoutMetrics,
-          ...metrics,
+          startup: JSON.stringify(metrics.startupStat),
+          serverStart: JSON.stringify(metrics.serverStartStat),
+          fcp: JSON.stringify(metrics.fcpStat),
         }
       })
       console.table(toLog)

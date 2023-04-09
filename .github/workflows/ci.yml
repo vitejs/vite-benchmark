@@ -21,7 +21,11 @@ jobs:
           cache: 'pnpm'
 
       - name: install
-        run: pnpm run bootstrap
+        run: |
+          pnpm run bootstrap
+          cd runner
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          pnpm playwright install chromium
 
       - name: format
         run: pnpm format
@@ -30,4 +34,7 @@ jobs:
         run: pnpm type-check
 
       - name: Run fixture benchmark
-        run: cd runner && pnpm tsx src/cli.ts bench --compares="vitejs/vite@tags/v4.2.1,vitejs/vite@tags/v4.3.0-beta.3" --repeats=3
+        run: |
+          cd runner
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          pnpm tsx src/cli.ts bench --compares="vitejs/vite@tags/v4.2.1,vitejs/vite@tags/v4.3.0-beta.3" --repeats=3
