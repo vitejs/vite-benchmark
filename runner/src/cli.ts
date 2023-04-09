@@ -1,15 +1,22 @@
 import { cac } from 'cac'
+import path from 'path'
+import colors from 'picocolors'
 
-import { prepareBenches, runBenches } from './cases'
+import core from '@actions/core'
+
+import {
+  composeGitHubActionsSummary,
+  prepareBenches,
+  runBenches,
+} from './cases'
 import { VITE_DIR } from './constant'
 import {
-  Compare,
   buildVite,
   cloneVite,
+  type Compare,
   getPullRequestData,
   parseCompare,
 } from './utils'
-import path from 'path'
 
 const cli = cac()
 const isGitHubActions = !!process.env['GITHUB_ACTIONS']
@@ -75,112 +82,32 @@ cli
       await prepareBenches({ compares, viteDistDirs })
     }
 
-    const benches = await runBenches({
+    const summarizedResult = await runBenches({
       compares,
       repeats: options.repeats,
     })
 
-    if (isGitHubActions) {
-      const core = await import('@actions/core')
-      const isPull = !!options.pullNumber
-      const repoLink = 'https://github.com/vitejs/vite-benchmark/tree/main'
-      if (isPull) {
-        core.summary
-          .addRaw(
-            options.pullNumber
-              ? `# Benchmark for pull request [#${options.pullNumber}](https://github.com/vitejs/vite/pull/${options.pullNumber})`
-              : `# Benchmark for ${compares.map((c) => c.uniqueKey).join(', ')}`
-          )
-          .addHeading('Meta Info', 2)
-          .addTable(
-            [
-              isPull && [
-                'pull request link',
-                `vitejs/vite#${options.pullNumber}`,
-              ],
-              ...compares.map((c, index) => [
-                `SHA of compare ${index}`,
-                `${c.owner}/${c.repo}@${c.sha.slice(0, 7)}`,
-              ]),
-              ['repetition', `${options.repeats}`],
-            ].filter(Boolean)
-          )
-          .addHeading('Benchmark Result', 2)
-
-        function formatPercent(from: number | string, to: number | string) {
-          from = +from
-          to = +to
-          const diff = to - from
-          if (diff === 0) return '-'
-          const diffPercent = from === 0 ? 0 : diff / from
-          const emoji =
-            Math.abs(diffPercent) < 0.0003 // ignore insignificant diff
-              ? ''
-              : diffPercent > 0
-              ? ' 🔺'
-              : ' ⚡️'
-          const percent =
-            from === 0
-              ? '-'
-              : ` (${diffPercent > 0 ? '+' : ''}${(diffPercent * 100).toFixed(
-                  2
-                )}%)`
-          return diff + percent + emoji
+    Object.keys(summarizedResult).forEach((key) => {
+      console.log(colors.cyan(`Summarized for ${key}`))
+      const toLog = summarizedResult[key]!.map((item) => {
+        const { metrics, ...withoutMetrics } = item
+        return {
+          ...withoutMetrics,
+          ...metrics,
         }
+      })
+      console.table(toLog)
+    })
 
-        Object.entries(benches).forEach(([_key, bench], idx) => {
-          const firstBench = bench[0]!
-          core.summary.addHeading(
-            `Case ${idx + 1}: <a href="${repoLink}/cases/${
-              firstBench.caseId
-            }">${firstBench.displayName}</a>`,
-            3
-          )
-          core.summary.addTable([
-            [
-              { data: 'ref', header: true },
-              { data: 'start up mean', header: true },
-              { data: 'start up median', header: true },
-              { data: 'server start mean', header: true },
-              { data: 'server start median', header: true },
-              { data: 'fcp mean', header: true },
-              { data: 'fcp median', header: true },
-            ],
-            ...bench.map((b) => [
-              b.repoRef,
-              b.startupMean,
-              b.startupMedian,
-              b.serverStartMean,
-              b.serverStartMedian,
-              b.fcpMean,
-              b.fcpMedian,
-            ]),
-          ])
+    const summaryStr = composeGitHubActionsSummary({
+      options,
+      compares,
+      summarizedResult,
+    })
 
-          core.summary.addTable([
-            [
-              { data: 'ref', header: true },
-              { data: 'start up mean', header: true },
-              { data: 'start up median', header: true },
-              { data: 'server start mean', header: true },
-              { data: 'server start median', header: true },
-              { data: 'fcp mean', header: true },
-              { data: 'fcp median', header: true },
-            ],
-            ...bench.map((b) => [
-              b.repoRef,
-              formatPercent(firstBench.startupMean, b.startupMean),
-              formatPercent(firstBench.startupMedian, b.startupMedian),
-              formatPercent(firstBench.serverStartMean, b.serverStartMean),
-              formatPercent(firstBench.serverStartMedian, b.serverStartMedian),
-              formatPercent(firstBench.fcpMean, b.fcpMean),
-              formatPercent(firstBench.fcpMedian, b.fcpMedian),
-            ]),
-          ])
-        })
-      }
+    core.setOutput('summary', summaryStr)
 
-      core.setOutput('summary', core.summary.stringify())
+    if (isGitHubActions) {
       await core.summary.write()
     }
   })

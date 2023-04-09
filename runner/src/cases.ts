@@ -1,13 +1,20 @@
 import { execa } from 'execa'
 import fsExtra from 'fs-extra'
+import { groupBy } from 'lodash-es'
 import path from 'path'
 import colors from 'picocolors'
-import { groupBy } from 'lodash-es'
 import * as stat from 'simple-statistics'
 
-import { browser, ServeBench } from './ServeBench'
+import core from '@actions/core'
+
 import { CASES_DIR, CASES_TEMP_DIR, UPLOAD_DIR_TEMP } from './constant'
-import { Compare, ServeResult, composeCaseTempDir } from './utils'
+import { browser, ServeBench } from './ServeBench'
+import {
+  composeCaseTempDir,
+  type Compare,
+  type BaseCase,
+  type ServeResult,
+} from './utils'
 
 export async function prepareBenches({
   compares,
@@ -42,7 +49,7 @@ export async function runBenches({
   repeats: number
 }) {
   console.log(colors.cyan(`Running benchmarks`))
-  const baseCases = [
+  const baseCases: BaseCase[] = [
     {
       id: 'perf-1',
       port: 5173,
@@ -56,9 +63,10 @@ export async function runBenches({
       script: 'start:vite',
       displayName: '1000 React components',
       viteCache: './node_modules/.vite',
-    } as const,
+    },
   ]
 
+  // interleaving running cases could reduce the variance
   // A(perf1) -> B(perf1) -> A(perf2) -> B(perf2) and repeat for several times
   const totalResults: ServeResult[] = []
   for (let i = 0; i < repeats; i++) {
@@ -82,74 +90,200 @@ export async function runBenches({
   }
 
   await browser.close()
+  logGroupResultByCase(totalResults)
+  return composeSummarized(totalResults, compares, baseCases)
+}
 
-  const groupedByCase = groupBy(totalResults, (result) => result.caseId)
+export function logGroupResultByCase(results: ServeResult[]) {
+  const groupedByCase = groupBy(results, (result) => result.caseId)
   Object.keys(groupedByCase).forEach((key) => {
-    const groupedByCaseByRef = groupBy(
-      groupedByCase[key],
-      (result) => result.uniqueKey
+    const groupedByCaseByRef = groupBy(groupedByCase[key], (result) =>
+      decodeURIComponent(result.uniqueKey)
     )
     Object.keys(groupedByCaseByRef).forEach((ref) => {
       console.log(colors.cyan(`Results for ${key} with ${ref}`))
       console.table(groupedByCaseByRef[ref])
     })
   })
+}
 
-  const finalResults = []
+type MetricKey = 'startupStat' | 'serverStartStat' | 'fcpStat'
+interface MetricStat {
+  mean: string
+  median: string
+}
+type MetricStatMap = Record<MetricKey, MetricStat>
+
+interface SummarizedResult {
+  repoRef: string
+  caseId: string
+  displayName: string
+  metrics: MetricStatMap
+}
+
+export function composeSummarized(
+  results: ServeResult[],
+  compares: Compare[],
+  baseCases: BaseCase[]
+): Record<string, SummarizedResult[]> {
+  const groupedResults: SummarizedResult[] = []
   for (const compare of compares) {
     for (const { id, displayName } of baseCases) {
-      finalResults.push({
+      groupedResults.push({
         repoRef: decodeURIComponent(compare.uniqueKey),
         caseId: id,
         displayName,
-        ...calcAverageOfMetric(totalResults, id, compare.uniqueKey),
+        metrics: calcMetrics(results, id, compare.uniqueKey),
       })
     }
   }
 
-  const perfGroups = groupBy(finalResults, (result) => result.caseId)
-  Object.keys(perfGroups).forEach((key) => {
-    console.log(colors.cyan(`Results for ${key}`))
-    console.table(perfGroups[key])
-  })
-
-  return perfGroups
+  return groupBy(groupedResults, (result) => result.caseId)
 }
 
-function calcAverageOfMetric(
+// TODO: add k-means
+export function calcMetrics(
   results: ServeResult[],
   caseId: string,
   uniqueKey: string
-) {
+): Record<MetricKey, MetricStat> {
   const filtered = results.filter(
     (result) => result.caseId === caseId && result.uniqueKey === uniqueKey
   )
 
-  const startups = filtered.map((result) => result.startup)
-  const serverStarts = filtered.map((result) => result.serverStart)
-  const fcps = filtered.map((result) => result.fcp)
-
-  const startupStat = {
-    mean: stat.mean(startups).toFixed(0),
-    median: stat.median(startups).toFixed(0),
+  const calcMetric = (metric: keyof ServeResult) => {
+    const values = filtered.map((result) => result[metric]) as number[]
+    return {
+      mean: stat.mean(values).toFixed(0),
+      median: stat.median(values).toFixed(0),
+    }
   }
 
-  const serverStartStat = {
-    mean: stat.mean(serverStarts).toFixed(0),
-    median: stat.median(serverStarts).toFixed(0),
-  }
-
-  const fcpStat = {
-    mean: stat.mean(fcps).toFixed(0),
-    median: stat.median(fcps).toFixed(0),
-  }
+  const startupStat = calcMetric('startup')
+  const serverStartStat = calcMetric('serverStart')
+  const fcpStat = calcMetric('fcp')
 
   return {
-    startupMean: startupStat.mean,
-    startupMedian: startupStat.median,
-    serverStartMean: serverStartStat.mean,
-    serverStartMedian: serverStartStat.median,
-    fcpMean: fcpStat.mean,
-    fcpMedian: fcpStat.median,
+    startupStat,
+    serverStartStat,
+    fcpStat,
   }
+}
+
+export function composeGitHubActionsSummary({
+  options,
+  compares,
+  summarizedResult,
+}: {
+  compares: Compare[]
+  options: any
+  summarizedResult: Record<string, SummarizedResult[]>
+}) {
+  const isPull = !!options.pullNumber
+  core.summary
+    .addRaw(
+      options.pullNumber
+        ? `# Benchmark for pull request [#${options.pullNumber}](https://github.com/vitejs/vite/pull/${options.pullNumber})`
+        : `# Benchmark for ${compares.map((c) => c.uniqueKey).join(', ')}`
+    )
+    .addHeading('Meta Info', 2)
+    .addTable(
+      [
+        isPull && ['pull request link', `vitejs/vite#${options.pullNumber}`],
+        ...compares.map((c, index) => [
+          `SHA of compare ${index}`,
+          `${c.owner}/${c.repo}@${c.sha.slice(0, 7)}`,
+        ]),
+        ['repetition', `${options.repeats}`],
+      ].filter(Boolean) as string[][]
+    )
+    .addHeading('Benchmark Result', 2)
+
+  const formatPercent = (from: number | string, to: number | string) => {
+    from = +from
+    to = +to
+    const diff = to - from
+    if (diff === 0) return '-'
+    const diffPercent = from === 0 ? 0 : diff / from
+    const emoji =
+      Math.abs(diffPercent) < 0.0003 // ignore insignificant diff
+        ? ''
+        : diffPercent > 0
+        ? ' 🔺'
+        : ' ⚡️'
+    const percent =
+      from === 0
+        ? '-'
+        : ` (${diffPercent > 0 ? '+' : ''}${(diffPercent * 100).toFixed(2)}%)`
+    return diff + percent + emoji
+  }
+
+  const repoLink = 'https://github.com/vitejs/vite-benchmark/tree/main'
+  Object.entries(summarizedResult).forEach(([_key, bench], idx) => {
+    const firstBench = bench[0]!
+    core.summary.addHeading(
+      `Case ${idx + 1}: <a href="${repoLink}/cases/${firstBench.caseId}">${
+        firstBench.displayName
+      }</a>`,
+      3
+    )
+    core.summary.addTable([
+      [
+        { data: 'ref', header: true },
+        { data: 'start up mean', header: true },
+        { data: 'start up median', header: true },
+        { data: 'server start mean', header: true },
+        { data: 'server start median', header: true },
+        { data: 'fcp mean', header: true },
+        { data: 'fcp median', header: true },
+      ],
+      ...bench.map((b) => [
+        b.repoRef,
+        b.metrics.startupStat.mean,
+        b.metrics.startupStat.median,
+        b.metrics.serverStartStat.mean,
+        b.metrics.serverStartStat.median,
+        b.metrics.fcpStat.mean,
+        b.metrics.fcpStat.median,
+      ]),
+    ])
+
+    core.summary.addTable([
+      [
+        { data: 'ref', header: true },
+        { data: 'start up mean', header: true },
+        { data: 'start up median', header: true },
+        { data: 'server start mean', header: true },
+        { data: 'server start median', header: true },
+        { data: 'fcp mean', header: true },
+        { data: 'fcp median', header: true },
+      ],
+      ...bench.map((b) => [
+        b.repoRef,
+        formatPercent(
+          firstBench.metrics.startupStat.mean,
+          b.metrics.startupStat.mean
+        ),
+        formatPercent(
+          firstBench.metrics.startupStat.median,
+          b.metrics.startupStat.median
+        ),
+        formatPercent(
+          firstBench.metrics.serverStartStat.mean,
+          b.metrics.serverStartStat.mean
+        ),
+        formatPercent(
+          firstBench.metrics.serverStartStat.median,
+          b.metrics.serverStartStat.median
+        ),
+        formatPercent(firstBench.metrics.fcpStat.mean, b.metrics.fcpStat.mean),
+        formatPercent(
+          firstBench.metrics.fcpStat.median,
+          b.metrics.fcpStat.median
+        ),
+      ]),
+    ])
+  })
+
+  return core.summary.stringify()
 }

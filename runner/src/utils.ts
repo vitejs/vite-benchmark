@@ -25,6 +25,14 @@ export interface Compare {
   uniqueKey: string
 }
 
+export interface BaseCase {
+  id: string
+  port: number
+  script: string
+  displayName: string
+  viteCache: string
+}
+
 export interface ServeResult {
   index: number
   caseId: string
@@ -193,8 +201,4 @@ export function composeCaseTempDir(compare: Compare): string {
     CASES_TEMP_DIR,
     `${compare.owner}___${compare.repo}___${compare.sha.slice(0, 7)}`
   )
-}
-
-export function summarizeResult(result: ServeResult): string {
-  return ''
 }
