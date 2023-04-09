@@ -1,15 +1,35 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`data report > calcMetrics 1`] = `
+{
+  "fcpStat": {
+    "kmeans": "-",
+    "mean": "1590",
+    "median": "1578",
+  },
+  "serverStartStat": {
+    "kmeans": "-",
+    "mean": "223",
+    "median": "166",
+  },
+  "startupStat": {
+    "kmeans": "-",
+    "mean": "2156",
+    "median": "2000",
+  },
+}
+`;
+
 exports[`data report > composeGitHubActionsSummary 1`] = `
 "# Benchmark for pull request [#12787](https://github.com/vitejs/vite/pull/12787)<h2>Meta Info</h2>
-<table><tr><td>pull request link</td><td>vitejs/vite#12787</td></tr><tr><td>SHA of compare 0</td><td>vitejs/vite@063d93b</td></tr><tr><td>SHA of compare 1</td><td>sun0day/vite@999ad63</td></tr><tr><td>repetition</td><td>undefined</td></tr></table>
+<table><tr><td>-</td></tr></table>
 <h2>Benchmark Result</h2>
 <h3>Case 1: <a href=\\"https://github.com/vitejs/vite-benchmark/tree/main/cases/perf-1\\">vite 2.7 slow</a></h3>
-<table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>server start mean</th><th>server start median</th><th>fcp mean</th><th>fcp median</th></tr><tr><td>vitejs/vite@063d93b</td><td>2156</td><td>2000</td><td>223</td><td>166</td><td>1590</td><td>1578</td></tr><tr><td>sun0day/vite@999ad63</td><td>2078</td><td>1956</td><td>219</td><td>157</td><td>1522</td><td>1510</td></tr></table>
-<table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>server start mean</th><th>server start median</th><th>fcp mean</th><th>fcp median</th></tr><tr><td>vitejs/vite@063d93b</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>sun0day/vite@999ad63</td><td>-78 (-3.62%) ⚡️</td><td>-44 (-2.20%) ⚡️</td><td>-4 (-1.79%) ⚡️</td><td>-9 (-5.42%) ⚡️</td><td>-68 (-4.28%) ⚡️</td><td>-68 (-4.31%) ⚡️</td></tr></table>
+<details><summary>Details</summary><table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>start up k-means</th><th>server start mean</th><th>server start median</th><th>server start k-means</th><th>fcp mean</th><th>fcp median</th><th>fcp k-means</th></tr><tr><td>-</td></tr></table>
+</details><table><tr><th>ref</th><th>start up k-means</th><th>server start k-means</th><th>fcp k-means</th></tr><tr><td>-</td></tr></table>
 <h3>Case 2: <a href=\\"https://github.com/vitejs/vite-benchmark/tree/main/cases/perf-2\\">1000 React components</a></h3>
-<table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>server start mean</th><th>server start median</th><th>fcp mean</th><th>fcp median</th></tr><tr><td>vitejs/vite@063d93b</td><td>2597</td><td>2600</td><td>202</td><td>203</td><td>2101</td><td>2089</td></tr><tr><td>sun0day/vite@999ad63</td><td>2592</td><td>2583</td><td>203</td><td>202</td><td>2092</td><td>2102</td></tr></table>
-<table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>server start mean</th><th>server start median</th><th>fcp mean</th><th>fcp median</th></tr><tr><td>vitejs/vite@063d93b</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr><tr><td>sun0day/vite@999ad63</td><td>-5 (-0.19%) ⚡️</td><td>-17 (-0.65%) ⚡️</td><td>1 (+0.50%) 🔺</td><td>-1 (-0.49%) ⚡️</td><td>-9 (-0.43%) ⚡️</td><td>13 (+0.62%) 🔺</td></tr></table>
+<details><summary>Details</summary><table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>start up k-means</th><th>server start mean</th><th>server start median</th><th>server start k-means</th><th>fcp mean</th><th>fcp median</th><th>fcp k-means</th></tr><tr><td>-</td></tr></table>
+</details><table><tr><th>ref</th><th>start up k-means</th><th>server start k-means</th><th>fcp k-means</th></tr><tr><td>-</td></tr></table>
 "
 `;
 
@@ -21,14 +41,17 @@ exports[`data report > composeSummarized 1`] = `
       "displayName": "vite 2.7 slow",
       "metrics": {
         "fcpStat": {
+          "kmeans": "-",
           "mean": "1590",
           "median": "1578",
         },
         "serverStartStat": {
+          "kmeans": "-",
           "mean": "223",
           "median": "166",
         },
         "startupStat": {
+          "kmeans": "-",
           "mean": "2156",
           "median": "2000",
         },
@@ -40,14 +63,17 @@ exports[`data report > composeSummarized 1`] = `
       "displayName": "vite 2.7 slow",
       "metrics": {
         "fcpStat": {
+          "kmeans": "-",
           "mean": "1522",
           "median": "1510",
         },
         "serverStartStat": {
+          "kmeans": "-",
           "mean": "219",
           "median": "157",
         },
         "startupStat": {
+          "kmeans": "-",
           "mean": "2078",
           "median": "1956",
         },
@@ -61,14 +87,17 @@ exports[`data report > composeSummarized 1`] = `
       "displayName": "1000 React components",
       "metrics": {
         "fcpStat": {
+          "kmeans": "-",
           "mean": "2101",
           "median": "2089",
         },
         "serverStartStat": {
+          "kmeans": "-",
           "mean": "202",
           "median": "203",
         },
         "startupStat": {
+          "kmeans": "-",
           "mean": "2597",
           "median": "2600",
         },
@@ -80,14 +109,17 @@ exports[`data report > composeSummarized 1`] = `
       "displayName": "1000 React components",
       "metrics": {
         "fcpStat": {
+          "kmeans": "-",
           "mean": "2092",
           "median": "2102",
         },
         "serverStartStat": {
+          "kmeans": "-",
           "mean": "203",
           "median": "202",
         },
         "startupStat": {
+          "kmeans": "-",
           "mean": "2592",
           "median": "2583",
         },
