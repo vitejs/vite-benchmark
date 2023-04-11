@@ -49,8 +49,9 @@ cli
     }
 
     let viteTempDirs: string[] = []
+    let cleanTempDirs: (() => Promise<void>)[] = []
     if (!options.skipClone) {
-      viteTempDirs = await Promise.all(
+      const dirs = await Promise.all(
         compares.map((c) =>
           cloneVite({
             owner: c.owner,
@@ -59,6 +60,8 @@ cli
           })
         )
       )
+      viteTempDirs = dirs.map((d) => d.viteTempDir)
+      cleanTempDirs = dirs.map((d) => d.cleanTempDir)
     } else {
       viteTempDirs = compares.map((c) =>
         path.resolve(VITE_DIR, c.uniqueKey, 'package')
@@ -78,7 +81,7 @@ cli
           })
         )
       )
-
+      await Promise.all(cleanTempDirs.map((fn) => fn()))
       await prepareBenches({ compares, viteDistDirs })
     }
 

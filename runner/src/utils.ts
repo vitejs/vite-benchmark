@@ -105,8 +105,6 @@ export async function parseCompare(compare: string): Promise<Compare[]> {
   return await Promise.all(repoPromises)
 }
 
-const RUNNER_TEMP = process.env['RUNNER_TEMP'] || os.tmpdir()
-
 export async function cloneVite({
   owner,
   repo,
@@ -117,8 +115,9 @@ export async function cloneVite({
   sha: string
 }) {
   // https://docs.github.com/en/actions/learn-github-actions/variables
+  const runnerTemp = process.env['RUNNER_TEMP'] || os.tmpdir()
   const viteRelativePath = './vite'
-  const tempDir = await fsp.mkdtemp(path.join(RUNNER_TEMP, viteRelativePath))
+  const tempDir = await fsp.mkdtemp(path.join(runnerTemp, viteRelativePath))
   const viteTempDir = path.resolve(tempDir, viteRelativePath)
   const shortName = `vite-${sha.slice(0, 8)}`
   const zipPath = path.resolve(tempDir, `./${shortName}.zip`)
@@ -138,7 +137,11 @@ export async function cloneVite({
   fs.renameSync(viteDirWithRef, viteTempDir)
 
   console.log(colors.cyan(`${owner}/${repo}@${sha} in ${viteTempDir}`))
-  return viteTempDir
+  const cleanTempDir = async () => {
+    await fsExtra.remove(tempDir)
+  }
+
+  return { viteTempDir, cleanTempDir }
 }
 
 export async function buildVite({
@@ -153,7 +156,7 @@ export async function buildVite({
   await $$`pnpm i`
 
   console.log(colors.cyan(`Start run 'pnpm build' for Vite`))
-  await $$`pnpm build`
+  await $$`pnpm --filter vite build`
 
   console.log(colors.cyan(`Start run 'pnpm pack' for Vite`))
   await execa('pnpm', ['pack'], {
