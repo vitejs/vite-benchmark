@@ -4,7 +4,6 @@ import { groupBy } from 'lodash-es'
 import path from 'path'
 import colors from 'picocolors'
 import * as stat from 'simple-statistics'
-import kMeans from 'skmeans'
 
 import core from '@actions/core'
 
@@ -112,7 +111,6 @@ type MetricKey = 'startupStat' | 'serverStartStat' | 'fcpStat'
 interface MetricStat {
   mean: string
   median: string
-  kmeans: string
 }
 type MetricStatMap = Record<MetricKey, MetricStat>
 
@@ -157,7 +155,6 @@ export function calcMetrics(
     return {
       mean: stat.mean(values).toFixed(0),
       median: stat.median(values).toFixed(0),
-      kmeans: calcKmeans(values).toFixed(0),
     }
   }
 
@@ -170,30 +167,6 @@ export function calcMetrics(
     serverStartStat,
     fcpStat,
   }
-}
-
-const calcKmeans = (values: number[]) => {
-  let kMeansSum = 0
-  let kMeansIter = 0
-
-  // run k-means 100000 times to reduce the variance
-  for (let i = 0; i < 100000; i++) {
-    // set cluster count to 3 as we want the median cluster form the one-dimensional data
-    const CLUSTER_COUNT = 3
-    const { centroids, idxs } = kMeans(values, CLUSTER_COUNT, 'kmpp')
-    const medianClusterIndex = centroids.indexOf(stat.median(centroids))
-    const medianClusterCount = idxs.filter(
-      (c) => c === medianClusterIndex
-    ).length
-
-    const LEAST_ELEMENT_COUNT = Math.floor(values.length / 3)
-    if (medianClusterCount >= LEAST_ELEMENT_COUNT) {
-      kMeansSum += centroids[medianClusterIndex]!
-      kMeansIter++
-    }
-  }
-
-  return kMeansSum / kMeansIter
 }
 
 export function composeGitHubActionsSummary({
@@ -260,25 +233,19 @@ export function composeGitHubActionsSummary({
         { data: 'ref', header: true },
         { data: 'start up mean', header: true },
         { data: 'start up median', header: true },
-        { data: 'start up k-means', header: true },
         { data: 'server start mean', header: true },
         { data: 'server start median', header: true },
-        { data: 'server start k-means', header: true },
         { data: 'fcp mean', header: true },
         { data: 'fcp median', header: true },
-        { data: 'fcp k-means', header: true },
       ],
       ...bench.map((b) => [
         b.repoRef,
         b.metrics.startupStat.mean,
         b.metrics.startupStat.median,
-        b.metrics.startupStat.kmeans,
         b.metrics.serverStartStat.mean,
         b.metrics.serverStartStat.median,
-        b.metrics.serverStartStat.kmeans,
         b.metrics.fcpStat.mean,
         b.metrics.fcpStat.median,
-        b.metrics.fcpStat.kmeans,
       ]),
     ])
     core.summary.addRaw('</details>')
@@ -293,16 +260,16 @@ export function composeGitHubActionsSummary({
       ...bench.map((b) => [
         b.repoRef,
         formatPercent(
-          firstBench.metrics.startupStat.kmeans,
-          b.metrics.startupStat.kmeans
+          firstBench.metrics.startupStat.median,
+          b.metrics.startupStat.median
         ),
         formatPercent(
-          firstBench.metrics.serverStartStat.kmeans,
-          b.metrics.serverStartStat.kmeans
+          firstBench.metrics.serverStartStat.median,
+          b.metrics.serverStartStat.median
         ),
         formatPercent(
-          firstBench.metrics.fcpStat.kmeans,
-          b.metrics.fcpStat.kmeans
+          firstBench.metrics.fcpStat.median,
+          b.metrics.fcpStat.median
         ),
       ]),
     ])
