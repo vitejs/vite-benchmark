@@ -9,7 +9,6 @@ specifiers:
   '@types/fs-extra': ^11.0.1
   '@types/lodash-es': ^4.17.7
   '@types/node': ^18.15.10
-  '@types/skmeans': ^0.11.4
   '@types/tar': ^6.1.4
   '@types/tar-fs': ^2.0.1
   adm-zip: ^0.5.10
@@ -22,7 +21,6 @@ specifiers:
   picocolors: ^1.0.0
   playwright: ^1.32.1
   simple-statistics: ^7.8.3
-  skmeans: ^0.11.3
   strip-ansi: ^7.0.1
   tar: ^6.1.13
   tar-fs: ^2.1.1
@@ -43,7 +41,6 @@ dependencies:
   picocolors: 1.0.0
   playwright: 1.32.1
   simple-statistics: 7.8.3
-  skmeans: 0.11.3
   strip-ansi: 7.0.1
   tar: 6.1.13
   tar-fs: 2.1.1
@@ -57,7 +54,6 @@ devDependencies:
   '@types/fs-extra': 11.0.1
   '@types/lodash-es': 4.17.7
   '@types/node': 18.15.10
-  '@types/skmeans': 0.11.4
   '@types/tar': 6.1.4
   '@types/tar-fs': 2.0.1
   tsx: 3.12.6
@@ -639,10 +635,6 @@ packages:
 
   /@types/node/18.15.10:
     resolution: {integrity: sha512-9avDaQJczATcXgfmMAW3MIWArOO7A+m90vuCFLr8AotWf8igO/mRoYukrk2cqZVtv38tHs33retzHEilM7FpeQ==}
-
-  /@types/skmeans/0.11.4:
-    resolution: {integrity: sha512-iWVuKVgumPatWINhifhU9VrVwSG0tD+BBq1z6BGQx4IA/xoCToxqk6WssUkR3Z2Dy5IfkAhNvlWNm6LW6MlJDA==}
-    dev: true
 
   /@types/tar-fs/2.0.1:
     resolution: {integrity: sha512-qlsQyIY9sN7p221xHuXKNoMfUenOcvEBN4zI8dGsYbYCqHtTarXOEXSIgUnK+GcR0fZDse6pAIc5pIrCh9NefQ==}
@@ -1458,10 +1450,6 @@ packages:
 
   /simple-statistics/7.8.3:
     resolution: {integrity: sha512-JFvMY00t6SBGtwMuJ+nqgsx9ylkMiJ5JlK9bkj8AdvniIe5615wWQYkKHXe84XtSuc40G/tlrPu0A5/NlJvv8A==}
-    dev: false
-
-  /skmeans/0.11.3:
-    resolution: {integrity: sha512-nccEnlSeOMNAYM9ETMSq+m15u8g0KRCIvH2an/ROTx4Igmci/j3oYHBPGdAeGjhR7knAVoIIQwr/wy2dN/eKQA==}
     dev: false
 
   /slice-ansi/5.0.0:

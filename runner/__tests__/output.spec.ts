@@ -7,23 +7,13 @@ import {
 
 describe('data report', () => {
   test('composeSummarized', () => {
-    const v = composeSummarized(results, compares, baseCases)
-    Object.keys(v).forEach((key) => {
-      v[key]!.forEach((item) => {
-        item.metrics.fcpStat.kmeans = '-'
-        item.metrics.serverStartStat.kmeans = '-'
-        item.metrics.startupStat.kmeans = '-'
-      })
-    })
-    expect(v).matchSnapshot()
+    expect(composeSummarized(results, compares, baseCases)).matchSnapshot()
   })
 
   test('calcMetrics', () => {
-    const v = calcMetrics(results, 'perf-1', 'vitejs%2Fvite%40063d93b')
-    v.fcpStat.kmeans = '-'
-    v.serverStartStat.kmeans = '-'
-    v.startupStat.kmeans = '-'
-    expect(v).toMatchSnapshot()
+    expect(
+      calcMetrics(results, 'perf-1', 'vitejs%2Fvite%40063d93b')
+    ).toMatchSnapshot()
   })
 
   test('composeGitHubActionsSummary', () => {

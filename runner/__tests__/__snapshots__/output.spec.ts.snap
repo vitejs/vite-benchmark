@@ -3,17 +3,14 @@
 exports[`data report > calcMetrics 1`] = `
 {
   "fcpStat": {
-    "kmeans": "-",
     "mean": "1590",
     "median": "1578",
   },
   "serverStartStat": {
-    "kmeans": "-",
     "mean": "223",
     "median": "166",
   },
   "startupStat": {
-    "kmeans": "-",
     "mean": "2156",
     "median": "2000",
   },
@@ -25,11 +22,11 @@ exports[`data report > composeGitHubActionsSummary 1`] = `
 <table><tr><td>-</td></tr></table>
 <h2>Benchmark Result</h2>
 <h3>Case 1: <a href=\\"https://github.com/vitejs/vite-benchmark/tree/main/cases/perf-1\\">vite 2.7 slow</a></h3>
-<details><summary>Details</summary><table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>start up k-means</th><th>server start mean</th><th>server start median</th><th>server start k-means</th><th>fcp mean</th><th>fcp median</th><th>fcp k-means</th></tr><tr><td>-</td></tr></table>
-</details><table><tr><th>ref</th><th>start up k-means</th><th>server start k-means</th><th>fcp k-means</th></tr><tr><td>-</td></tr></table>
+<details><summary>Details</summary><table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>server start mean</th><th>server start median</th><th>fcp mean</th><th>fcp median</th></tr><tr><td>-</td></tr></table>
+</details><table><tr><th>ref</th><th>start</th><th>server</th><th>fcp</th></tr><tr><td>-</td></tr></table>
 <h3>Case 2: <a href=\\"https://github.com/vitejs/vite-benchmark/tree/main/cases/perf-2\\">1000 React components</a></h3>
-<details><summary>Details</summary><table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>start up k-means</th><th>server start mean</th><th>server start median</th><th>server start k-means</th><th>fcp mean</th><th>fcp median</th><th>fcp k-means</th></tr><tr><td>-</td></tr></table>
-</details><table><tr><th>ref</th><th>start up k-means</th><th>server start k-means</th><th>fcp k-means</th></tr><tr><td>-</td></tr></table>
+<details><summary>Details</summary><table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>server start mean</th><th>server start median</th><th>fcp mean</th><th>fcp median</th></tr><tr><td>-</td></tr></table>
+</details><table><tr><th>ref</th><th>start</th><th>server</th><th>fcp</th></tr><tr><td>-</td></tr></table>
 "
 `;
 
@@ -41,17 +38,14 @@ exports[`data report > composeSummarized 1`] = `
       "displayName": "vite 2.7 slow",
       "metrics": {
         "fcpStat": {
-          "kmeans": "-",
           "mean": "1590",
           "median": "1578",
         },
         "serverStartStat": {
-          "kmeans": "-",
           "mean": "223",
           "median": "166",
         },
         "startupStat": {
-          "kmeans": "-",
           "mean": "2156",
           "median": "2000",
         },
@@ -63,17 +57,14 @@ exports[`data report > composeSummarized 1`] = `
       "displayName": "vite 2.7 slow",
       "metrics": {
         "fcpStat": {
-          "kmeans": "-",
           "mean": "1522",
           "median": "1510",
         },
         "serverStartStat": {
-          "kmeans": "-",
           "mean": "219",
           "median": "157",
         },
         "startupStat": {
-          "kmeans": "-",
           "mean": "2078",
           "median": "1956",
         },
@@ -87,17 +78,14 @@ exports[`data report > composeSummarized 1`] = `
       "displayName": "1000 React components",
       "metrics": {
         "fcpStat": {
-          "kmeans": "-",
           "mean": "2101",
           "median": "2089",
         },
         "serverStartStat": {
-          "kmeans": "-",
           "mean": "202",
           "median": "203",
         },
         "startupStat": {
-          "kmeans": "-",
           "mean": "2597",
           "median": "2600",
         },
@@ -109,17 +97,14 @@ exports[`data report > composeSummarized 1`] = `
       "displayName": "1000 React components",
       "metrics": {
         "fcpStat": {
-          "kmeans": "-",
           "mean": "2092",
           "median": "2102",
         },
         "serverStartStat": {
-          "kmeans": "-",
           "mean": "203",
           "median": "202",
         },
         "startupStat": {
-          "kmeans": "-",
           "mean": "2592",
           "median": "2583",
         },
