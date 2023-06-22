@@ -20,7 +20,7 @@
     "react-dom": "^18.2.0",
     "react-router": "^6.9.0",
     "react-router-dom": "^6.9.0",
-    "speedscope": "1.15.0",
+    "speedscope": "1.15.2",
     "unzipit": "^1.4.2"
   },
   "devDependencies": {
