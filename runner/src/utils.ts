@@ -153,7 +153,7 @@ export async function buildVite({
 }) {
   const $$ = $({ stdio: 'inherit', cwd: viteProjectPath })
   await $$`node -v`
-  await $$`pnpm i`
+  await $$`pnpm i --no-frozen-lockfile`
 
   console.log(colors.cyan(`Start run 'pnpm build' for Vite`))
   await $$`pnpm --filter vite build`
