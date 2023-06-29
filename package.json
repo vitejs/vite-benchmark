@@ -1,5 +1,5 @@
 {
-  "packageManager": "pnpm@7.30.5",
+  "packageManager": "pnpm@8.6.5",
   "scripts": {
     "bootstrap": "pnpm i && cd runner && pnpm i",
     "type-check": "pnpm -r type-check",

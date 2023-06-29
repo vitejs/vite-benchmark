@@ -1,4 +1,13 @@
 {
   "singleQuote": true,
-  "semi": false
+  "semi": false,
+  "overrides": [
+    {
+      "files": ["*.json5"],
+      "options": {
+        "singleQuote": false,
+        "quoteProps": "preserve"
+      }
+    }
+  ]
 }
