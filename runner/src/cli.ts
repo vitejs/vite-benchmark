@@ -16,10 +16,11 @@ import {
   type Compare,
   getPullRequestData,
   parseCompare,
+  GITHUB_ACTIONS,
+  actionsCache,
 } from './utils'
 
 const cli = cac()
-const isGitHubActions = !!process.env['GITHUB_ACTIONS']
 
 cli
   .command('bench', 'run full benchmark process')
@@ -48,9 +49,18 @@ cli
       compares = await parseCompare(options.compares)
     }
 
+    const { restoreCache, saveCache, cachePaths, cacheKey } =
+      actionsCache(compares)
+    let hasActionsCache = false
+    if (GITHUB_ACTIONS) {
+      const key = await restoreCache()
+      console.log(colors.cyan(`Actions cache key: ${key}`))
+      hasActionsCache = !!key
+    }
+
     let viteTempDirs: string[] = []
     let cleanTempDirs: (() => Promise<void>)[] = []
-    if (!options.skipClone) {
+    if (!(options.skipClone || hasActionsCache)) {
       const dirs = await Promise.all(
         compares.map((c) =>
           cloneVite({
@@ -72,7 +82,7 @@ cli
       (r) => `${VITE_DIR}/${r.uniqueKey}/package`
     )
 
-    if (!options.skipPrepare) {
+    if (!(options.skipPrepare || hasActionsCache)) {
       await Promise.all(
         viteTempDirs.map((path, index) =>
           buildVite({
@@ -81,6 +91,18 @@ cli
           })
         )
       )
+
+      if (GITHUB_ACTIONS) {
+        await saveCache()
+        console.log(
+          colors.cyan(
+            `Actions cache saved of paths ${cachePaths.join(
+              ', '
+            )}, cache key: "${cacheKey}"`
+          )
+        )
+      }
+
       await Promise.all(cleanTempDirs.map((fn) => fn()))
       await prepareBenches({ compares, viteDistDirs })
     }
@@ -112,7 +134,7 @@ cli
 
     core.setOutput('summary', summaryStr)
 
-    if (isGitHubActions) {
+    if (GITHUB_ACTIONS) {
       await core.summary.write()
     }
   })

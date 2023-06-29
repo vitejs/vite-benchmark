@@ -10,6 +10,7 @@ import { pipeline } from 'node:stream/promises'
 import { Octokit } from 'octokit'
 import colors from 'picocolors'
 import tar from 'tar'
+import { restoreCache, saveCache } from '@actions/cache'
 
 import { REPO_OWNER, REPO_NAME, CASES_TEMP_DIR, VITE_DIR } from './constant'
 
@@ -173,9 +174,9 @@ export async function buildVite({
     throw new Error(`Can't find tarball for Vite`)
   }
 
-  const uniquePath = path.resolve(VITE_DIR, uniqueKey)
-  fsExtra.ensureDirSync(uniquePath)
-  const tarPath = path.resolve(uniquePath, tarName)
+  const viteUniquePath = path.resolve(VITE_DIR, uniqueKey)
+  fsExtra.ensureDirSync(viteUniquePath)
+  const tarPath = path.resolve(viteUniquePath, tarName)
 
   await fsp.copyFile(
     path.resolve(viteProjectPath, 'packages/vite', tarName),
@@ -184,10 +185,10 @@ export async function buildVite({
 
   await tar.x({
     file: tarPath,
-    cwd: uniquePath,
+    cwd: viteUniquePath,
   })
 
-  const viteDistDir = path.resolve(uniquePath, 'package')
+  const viteDistDir = path.resolve(viteUniquePath, 'package')
   return viteDistDir
 }
 
@@ -204,4 +205,26 @@ export function composeCaseTempDir(compare: Compare): string {
     CASES_TEMP_DIR,
     `${compare.owner}___${compare.repo}___${compare.sha.slice(0, 7)}`
   )
+}
+
+export const GITHUB_ACTIONS = !!process.env['GITHUB_ACTIONS']
+
+export const actionsCache = (compares: Compare[]) => {
+  const cachePaths = compares.map((r) => path.resolve(VITE_DIR, r.uniqueKey))
+  const cacheKey = `${os.platform()}---${compares
+    .map((r) => r.uniqueKey)
+    .sort()
+    .join('---')}`
+
+  return {
+    cachePaths,
+    cacheKey,
+    restoreCache: async () => {
+      const hit = await restoreCache(cachePaths, cacheKey)
+      return hit
+    },
+    saveCache: async () => {
+      await saveCache(cachePaths, cacheKey)
+    },
+  }
 }
