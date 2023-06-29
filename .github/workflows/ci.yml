@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: install
+        run: |
+          pnpm run bootstrap
+          cd runner
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          pnpm playwright install chromium
+
+      - name: format
+        run: pnpm format
+
+      - name: type-check
+        run: pnpm type-check
+
+      - name: Run fixture benchmark
+        run: |
+          cd runner
+          export PLAYWRIGHT_BROWSERS_PATH=0
+          pnpm tsx src/cli.ts bench --compares="vitejs/vite@tags/v4.2.1,vitejs/vite@tags/v4.3.0-beta.3" --repeats=3

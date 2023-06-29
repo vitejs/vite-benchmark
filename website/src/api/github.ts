@@ -1,7 +1,7 @@
 import { CompareItem } from '../types'
 
 export function composeZipUrl(path: string) {
-  return `https://fi3ework.github.io/vite-benchmark/data/${path}/benchmark.zip`
+  return `https://vitejs.github.io/vite-benchmark/data/${path}/benchmark.zip`
 }
 
 function composeCompareItemKey(compare: CompareItem) {
@@ -12,7 +12,7 @@ export function composeCompareZipUrl(
   compareUniqueKey: string,
   compare: CompareItem
 ): string {
-  const res = `https://fi3ework.github.io/vite-benchmark/data/${encodeURIComponent(
+  const res = `https://vitejs.github.io/vite-benchmark/data/${encodeURIComponent(
     encodeURIComponent(compareUniqueKey)
   )}/${encodeURIComponent(composeCompareItemKey(compare))}.zip`
 

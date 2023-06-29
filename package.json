@@ -1,9 +1,21 @@
 {
   "packageManager": "pnpm@7.30.5",
   "scripts": {
-    "benchmark": "(cd runner && pnpm benchmark:prod)"
+    "bootstrap": "pnpm i && cd runner && pnpm i",
+    "type-check": "pnpm -r type-check",
+    "format": "prettier --check ."
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged --concurrent false"
+  },
+  "lint-staged": {
+    "*": [
+      "prettier --write --ignore-unknown"
+    ]
   },
   "devDependencies": {
-    "prettier": "^2.8.4"
+    "lint-staged": "^13.2.1",
+    "prettier": "^2.8.4",
+    "simple-git-hooks": "^2.8.1"
   }
 }

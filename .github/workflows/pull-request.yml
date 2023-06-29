@@ -10,25 +10,54 @@ on:
         description: number of benchmark repeats
         required: true
         type: string
-        default: '10'
+        default: '50'
+      os:
+        description: os matrix, comma separated, could be 'Linux' | 'Windows' | 'macOS'
+        required: false
+        type: string
+        default: Linux
 jobs:
   benchmark:
     name: Run benchmark
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
+      - uses: actions/github-script@v6
+        id: os
+        with:
+          script: |
+            const runnerOS = process.env.RUNNER_OS;
+            if(!context.payload.inputs.os.split(',').map(os => os.trim()).includes(runnerOS)) {
+              core.summary.addHeading('Skipping benchmark on ${{ matrix.os }}', 6)
+              await core.summary.write()
+              core.setOutput('os_skip', 'true')
+            }
       - uses: actions/checkout@v3
+        if: ${{ steps.os.outputs.os_skip != 'true' }}
       - uses: pnpm/action-setup@v2
+        if: ${{ steps.os.outputs.os_skip != 'true' }}
       - uses: actions/setup-node@v3
+        if: ${{ steps.os.outputs.os_skip != 'true' }}
         with:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: cd runner && pnpm install
+        if: ${{ steps.os.outputs.os_skip != 'true' }}
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: 0
+        run: |
+          pnpm run bootstrap
+          cd runner
+          pnpm playwright install chromium
 
       - name: Run benchmark
+        if: ${{ steps.os.outputs.os_skip != 'true' }}
         id: run_benchmark
-        run: cd runner && pnpm tsx src/cli.ts bench --pull-number="${{ inputs.pull_number }}" --repeats="${{ inputs.repeats }}"
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: 0
+        run: |
+          cd runner
+          pnpm tsx src/cli.ts bench --pull-number="${{ inputs.pull_number }}" --repeats="${{ inputs.repeats }}"

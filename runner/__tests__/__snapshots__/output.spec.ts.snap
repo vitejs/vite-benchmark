@@ -1,0 +1,116 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`data report > calcMetrics 1`] = `
+{
+  "fcpStat": {
+    "mean": "1590",
+    "median": "1578",
+  },
+  "serverStartStat": {
+    "mean": "223",
+    "median": "166",
+  },
+  "startupStat": {
+    "mean": "2156",
+    "median": "2000",
+  },
+}
+`;
+
+exports[`data report > composeGitHubActionsSummary 1`] = `
+"# Benchmark for pull request [#12787](https://github.com/vitejs/vite/pull/12787)<h2>Meta Info</h2>
+<table><tr><td>-</td></tr></table>
+<h2>Benchmark Result</h2>
+<h3>Case 1: <a href=\\"https://github.com/vitejs/vite-benchmark/tree/main/cases/perf-1\\">vite 2.7 slow</a></h3>
+<details><summary>Details</summary><table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>server start mean</th><th>server start median</th><th>fcp mean</th><th>fcp median</th></tr><tr><td>-</td></tr></table>
+</details><table><tr><th>ref</th><th>start</th><th>server</th><th>fcp</th></tr><tr><td>-</td></tr></table>
+<h3>Case 2: <a href=\\"https://github.com/vitejs/vite-benchmark/tree/main/cases/perf-2\\">1000 React components</a></h3>
+<details><summary>Details</summary><table><tr><th>ref</th><th>start up mean</th><th>start up median</th><th>server start mean</th><th>server start median</th><th>fcp mean</th><th>fcp median</th></tr><tr><td>-</td></tr></table>
+</details><table><tr><th>ref</th><th>start</th><th>server</th><th>fcp</th></tr><tr><td>-</td></tr></table>
+"
+`;
+
+exports[`data report > composeSummarized 1`] = `
+{
+  "perf-1": [
+    {
+      "caseId": "perf-1",
+      "displayName": "vite 2.7 slow",
+      "metrics": {
+        "fcpStat": {
+          "mean": "1590",
+          "median": "1578",
+        },
+        "serverStartStat": {
+          "mean": "223",
+          "median": "166",
+        },
+        "startupStat": {
+          "mean": "2156",
+          "median": "2000",
+        },
+      },
+      "repoRef": "vitejs/vite@063d93b",
+    },
+    {
+      "caseId": "perf-1",
+      "displayName": "vite 2.7 slow",
+      "metrics": {
+        "fcpStat": {
+          "mean": "1522",
+          "median": "1510",
+        },
+        "serverStartStat": {
+          "mean": "219",
+          "median": "157",
+        },
+        "startupStat": {
+          "mean": "2078",
+          "median": "1956",
+        },
+      },
+      "repoRef": "sun0day/vite@999ad63",
+    },
+  ],
+  "perf-2": [
+    {
+      "caseId": "perf-2",
+      "displayName": "1000 React components",
+      "metrics": {
+        "fcpStat": {
+          "mean": "2101",
+          "median": "2089",
+        },
+        "serverStartStat": {
+          "mean": "202",
+          "median": "203",
+        },
+        "startupStat": {
+          "mean": "2597",
+          "median": "2600",
+        },
+      },
+      "repoRef": "vitejs/vite@063d93b",
+    },
+    {
+      "caseId": "perf-2",
+      "displayName": "1000 React components",
+      "metrics": {
+        "fcpStat": {
+          "mean": "2092",
+          "median": "2102",
+        },
+        "serverStartStat": {
+          "mean": "203",
+          "median": "202",
+        },
+        "startupStat": {
+          "mean": "2592",
+          "median": "2583",
+        },
+      },
+      "repoRef": "sun0day/vite@999ad63",
+    },
+  ],
+}
+`;

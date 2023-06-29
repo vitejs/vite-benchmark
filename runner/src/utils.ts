@@ -25,6 +25,14 @@ export interface Compare {
   uniqueKey: string
 }
 
+export interface BaseCase {
+  id: string
+  port: number
+  script: string
+  displayName: string
+  viteCache: string
+}
+
 export interface ServeResult {
   index: number
   caseId: string
@@ -97,8 +105,6 @@ export async function parseCompare(compare: string): Promise<Compare[]> {
   return await Promise.all(repoPromises)
 }
 
-const RUNNER_TEMP = process.env['RUNNER_TEMP'] || os.tmpdir()
-
 export async function cloneVite({
   owner,
   repo,
@@ -109,8 +115,9 @@ export async function cloneVite({
   sha: string
 }) {
   // https://docs.github.com/en/actions/learn-github-actions/variables
+  const runnerTemp = process.env['RUNNER_TEMP'] || os.tmpdir()
   const viteRelativePath = './vite'
-  const tempDir = await fsp.mkdtemp(path.join(RUNNER_TEMP, viteRelativePath))
+  const tempDir = await fsp.mkdtemp(path.join(runnerTemp, viteRelativePath))
   const viteTempDir = path.resolve(tempDir, viteRelativePath)
   const shortName = `vite-${sha.slice(0, 8)}`
   const zipPath = path.resolve(tempDir, `./${shortName}.zip`)
@@ -130,7 +137,11 @@ export async function cloneVite({
   fs.renameSync(viteDirWithRef, viteTempDir)
 
   console.log(colors.cyan(`${owner}/${repo}@${sha} in ${viteTempDir}`))
-  return viteTempDir
+  const cleanTempDir = async () => {
+    await fsExtra.remove(tempDir)
+  }
+
+  return { viteTempDir, cleanTempDir }
 }
 
 export async function buildVite({
@@ -145,7 +156,7 @@ export async function buildVite({
   await $$`pnpm i`
 
   console.log(colors.cyan(`Start run 'pnpm build' for Vite`))
-  await $$`pnpm build`
+  await $$`pnpm --filter vite build`
 
   console.log(colors.cyan(`Start run 'pnpm pack' for Vite`))
   await execa('pnpm', ['pack'], {
@@ -181,8 +192,8 @@ export async function buildVite({
 }
 
 export function composeCompareUrl(compares: Compare[]): string {
-  // ex. https://fi3ework.github.io/vite-benchmark/compare/?compares=vitejs%2Fvite%401f011d8...vitejs%2Fvite%40c268cfa
-  const base = 'https://fi3ework.github.io/vite-benchmark/compare'
+  // ex. https://vitejs.github.io/vite-benchmark/compare/?compares=vitejs%2Fvite%401f011d8...vitejs%2Fvite%40c268cfa
+  const base = 'https://vitejs.github.io/vite-benchmark/compare'
   const compareQuery = compares.map((c) => c.uniqueKey).join('...')
 
   return `${base}/?compares=${compareQuery}`
@@ -193,8 +204,4 @@ export function composeCaseTempDir(compare: Compare): string {
     CASES_TEMP_DIR,
     `${compare.owner}___${compare.repo}___${compare.sha.slice(0, 7)}`
   )
-}
-
-export function summarizeResult(result: ServeResult): string {
-  return ''
 }
